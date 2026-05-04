@@ -3,44 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gems Mines - VIP 2 Bombs</title>
+    <title>Gems Mines - VIP Access</title>
     <style>
-        body { background-color: #001a2d; color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 10px; display: none; }
-        .header { color: #00d4ff; font-size: 28px; margin: 15px 0; text-shadow: 0 0 10px #00d4ff; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 320px; margin: 0 auto; background: #0a4269; padding: 10px; border-radius: 12px; border: 3px solid #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.4); }
-        .cell { width: 55px; height: 55px; background: #1a5a8a; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: 0.2s; border: 1px solid #00d4ff; }
-        .cell.gem { background: linear-gradient(135deg, #00d4ff, #005f73); }
+        :root { --main-blue: #00d4ff; --bg-dark: #001a2d; }
+        body { background-color: var(--bg-dark); color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; }
+        
+        /* شاشة الدخول */
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .login-box { background: #0a4269; padding: 30px; border-radius: 20px; border: 2px solid var(--main-blue); box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); width: 80%; max-width: 300px; }
+        .login-box h2 { color: var(--main-blue); margin-bottom: 20px; text-shadow: 0 0 10px var(--main-blue); }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid var(--main-blue); background: #001a2d; color: white; text-align: center; font-size: 20px; box-sizing: border-box; }
+        .login-box button { background: var(--main-blue); color: #001a2d; border: none; padding: 10px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px; }
+
+        /* ستايل اللعبة */
+        #gameContent { display: none; }
+        .header { color: var(--main-blue); font-size: 28px; margin: 15px 0; text-shadow: 0 0 10px var(--main-blue); font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 320px; margin: 0 auto; background: #0a4269; padding: 10px; border-radius: 12px; border: 3px solid var(--main-blue); box-shadow: 0 0 20px rgba(0,212,255,0.4); }
+        .cell { width: 55px; height: 55px; background: #1a5a8a; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: 0.2s; border: 1px solid var(--main-blue); }
+        .cell.gem { background: linear-gradient(135deg, var(--main-blue), #005f73); }
         .cell.bomb { background: linear-gradient(135deg, #ff4d4d, #800000); border-color: #ff4d4d; }
+        .status { margin-top: 15px; font-size: 18px; background: rgba(0,212,255,0.1); padding: 12px; border-radius: 10px; border: 1px dashed var(--main-blue); }
         .controls { margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        button { border: none; padding: 12px 15px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-undo { background: #ffc107; color: black; flex: 1; max-width: 100px; }
-        .btn-reset { background: #dc3545; flex: 1; max-width: 100px; }
-        .btn-new { background: #28a745; width: 85%; margin-top: 10px; font-size: 18px; }
-        .status { margin-top: 15px; font-size: 20px; background: rgba(0,212,255,0.1); padding: 12px; border-radius: 10px; border: 1px dashed #00d4ff; }
+        .btn { border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-undo { background: #ffc107; color: black; }
+        .btn-reset { background: #dc3545; }
+        .btn-new { background: #28a745; width: 85%; margin-top: 10px; }
     </style>
 </head>
-<body id="mainBody">
-    <div class="header">GEMS MINES - VIP</div>
-    <div class="grid" id="grid"></div>
-    
-    <div class="status">
-        💎 جواهر: <span id="score">0</span> | 💣 قنابل: <span id="bombs">0</span>
+<body>
+
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2>GEMS MINES</h2>
+            <input type="password" id="passInput" placeholder="أدخل كلمة المرور">
+            <button onclick="checkPass()">دخول اللعبة</button>
+        </div>
     </div>
 
-    <div class="controls">
-        <button class="btn-undo" onclick="undoMove()">↩ تراجع</button>
-        <button class="btn-reset" onclick="resetCurrentRound()">🔄 إعادة الدور</button>
-        <button class="btn-new" onclick="startNewGame()">🆕 لعبة جديدة (2 قنبلة فقط)</button>
+    <div id="gameContent">
+        <div class="header">GEMS MINES - VIP</div>
+        <div class="grid" id="grid"></div>
+        <div class="status">
+            💎 جواهر: <span id="score">0</span> | 💣 قنابل: <span id="bombs">0</span>
+        </div>
+        <div class="controls">
+            <button class="btn btn-undo" onclick="undoMove()">↩ تراجع</button>
+            <button class="btn btn-reset" onclick="resetCurrentRound()">🔄 إعادة الدور</button>
+            <button class="btn btn-new" onclick="startNewGame()">🆕 لعبة جديدة (2 قنبلة)</button>
+        </div>
     </div>
 
     <script>
-        // نظام الباسورد
-        const password = prompt("أدخل كلمة المرور (15711):");
-        if (password === "15711") { 
-            document.getElementById("mainBody").style.display = "block"; 
-        } else { 
-            alert("الباسورد خطأ!"); 
-            window.location.reload(); 
+        function checkPass() {
+            const input = document.getElementById('passInput').value;
+            if (input === "15711") {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('gameContent').style.display = 'block';
+                startNewGame();
+            } else {
+                alert("كلمة المرور خاطئة!");
+            }
         }
 
         let score = 0;
@@ -50,11 +72,7 @@
         const gridElement = document.getElementById('grid');
 
         function startNewGame() {
-            score = 0;
-            bombsFound = 0;
-            moveHistory = [];
-            bombPositions = [];
-            // توزيع 2 قنبلة فقط بشكل عشوائي تماماً
+            score = 0; bombsFound = 0; moveHistory = []; bombPositions = [];
             while(bombPositions.length < 2) {
                 let r = Math.floor(Math.random() * 25);
                 if(!bombPositions.includes(r)) bombPositions.push(r);
@@ -68,7 +86,6 @@
             for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.dataset.index = i;
                 cell.onclick = () => play(cell, i);
                 gridElement.appendChild(cell);
             }
@@ -76,18 +93,12 @@
 
         function play(cell, index) {
             if (cell.innerHTML !== '') return;
-
             let isBomb = bombPositions.includes(index);
             moveHistory.push({index: index, isBomb: isBomb});
-
             if (isBomb) {
-                cell.classList.add('bomb');
-                cell.innerHTML = '💣';
-                bombsFound++;
+                cell.classList.add('bomb'); cell.innerHTML = '💣'; bombsFound++;
             } else {
-                cell.classList.add('gem');
-                cell.innerHTML = '💎';
-                score++;
+                cell.classList.add('gem'); cell.innerHTML = '💎'; score++;
             }
             updateDisplay();
         }
@@ -96,26 +107,20 @@
             if (moveHistory.length === 0) return;
             let lastMove = moveHistory.pop();
             let cell = gridElement.children[lastMove.index];
-            cell.innerHTML = '';
-            cell.className = 'cell';
+            cell.innerHTML = ''; cell.className = 'cell';
             if (lastMove.isBomb) bombsFound--; else score--;
             updateDisplay();
         }
 
         function resetCurrentRound() {
-            score = 0;
-            bombsFound = 0;
-            moveHistory = [];
-            updateDisplay();
-            createGrid();
+            score = 0; bombsFound = 0; moveHistory = [];
+            updateDisplay(); createGrid();
         }
 
         function updateDisplay() {
             document.getElementById('score').innerText = score;
             document.getElementById('bombs').innerText = bombsFound;
         }
-
-        startNewGame();
     </script>
 </body>
 </html>
