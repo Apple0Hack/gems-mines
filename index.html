@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gems Mines - Hard Mode</title>
+    <style>
+        body { background-color: #001a2d; color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 10px; display: none; }
+        .header { color: #00d4ff; font-size: 28px; margin: 15px 0; text-shadow: 0 0 10px #00d4ff; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 320px; margin: 0 auto; background: #0a4269; padding: 10px; border-radius: 12px; border: 3px solid #00d4ff; }
+        .cell { width: 55px; height: 55px; background: #1a5a8a; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: 0.2s; border: 1px solid #00d4ff; }
+        .cell.gem { background: linear-gradient(135deg, #00d4ff, #005f73); }
+        .cell.bomb { background: linear-gradient(135deg, #ff4d4d, #800000); }
+        .controls { margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        button { border: none; padding: 10px 15px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-undo { background: #ffc107; color: black; }
+        .btn-reset { background: #dc3545; }
+        .btn-new { background: #28a745; width: 80%; margin-top: 10px; }
+        .status { margin-top: 15px; font-size: 18px; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; }
+    </style>
+</head>
+<body id="mainBody">
+    <div class="header">GEMS MINES - VIP</div>
+    <div class="grid" id="grid"></div>
+    
+    <div class="status">
+        💎 جواهر: <span id="score">0</span> | 💣 قنابل: <span id="bombs">0</span>
+    </div>
+
+    <div class="controls">
+        <button class="btn-undo" onclick="undoMove()">↩ تراجع</button>
+        <button class="btn-reset" onclick="resetCurrentRound()">🔄 إعادة الدور</button>
+        <button class="btn-new" onclick="startNewGame()">🆕 لعبة جديدة (تغيير أماكن القنابل)</button>
+    </div>
+
+    <script>
+        const password = prompt("أدخل كلمة المرور (15711):");
+        if (password === "15711") { document.getElementById("mainBody").style.display = "block"; } 
+        else { alert("خطأ!"); window.location.reload(); }
+
+        let score = 0;
+        let bombsFound = 0;
+        let bombPositions = [];
+        let moveHistory = [];
+        const gridElement = document.getElementById('grid');
+
+        function startNewGame() {
+            score = 0;
+            bombsFound = 0;
+            moveHistory = [];
+            bombPositions = [];
+            // توزيع قنابل عشوائي في بداية الدور (صعب: 5 قنابل مثلاً)
+            while(bombPositions.length < 5) {
+                let r = Math.floor(Math.random() * 25);
+                if(!bombPositions.includes(r)) bombPositions.push(r);
+            }
+            updateDisplay();
+            createGrid();
+        }
+
+        function createGrid() {
+            gridElement.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.onclick = () => play(cell, i);
+                gridElement.appendChild(cell);
+            }
+        }
+
+        function play(cell, index) {
+            if (cell.innerHTML !== '') return;
+
+            let isBomb = bombPositions.includes(index);
+            moveHistory.push({index: index, isBomb: isBomb});
+
+            if (isBomb) {
+                cell.classList.add('bomb');
+                cell.innerHTML = '💣';
+                bombsFound++;
+            } else {
+                cell.classList.add('gem');
+                cell.innerHTML = '💎';
+                score++;
+            }
+            updateDisplay();
+        }
+
+        function undoMove() {
+            if (moveHistory.length === 0) return;
+            let lastMove = moveHistory.pop();
+            let cell = gridElement.children[lastMove.index];
+            cell.innerHTML = '';
+            cell.className = 'cell';
+            if (lastMove.isBomb) bombsFound--; else score--;
+            updateDisplay();
+        }
+
+        function resetCurrentRound() {
+            score = 0;
+            bombsFound = 0;
+            moveHistory = [];
+            updateDisplay();
+            createGrid();
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').innerText = score;
+            document.getElementById('bombs').innerText = bombsFound;
+        }
+
+        startNewGame();
+    </script>
+</body>
+</html>
