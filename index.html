@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES - HHack VIP</title>
+    <title>GEMS MINES - HHACK VIP</title>
     <style>
         :root { --gold: #ffd700; --blue: #00d4ff; --bg: #000c18; --neon: 0 0 15px rgba(0, 212, 255, 0.6); }
         body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle, #002b4d 0%, #000c18 100%); color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -62,7 +62,9 @@
     </div>
 
     <script>
-        const allowedIDs = ["user1", "admin", "15711", "10020025", "1002075"];
+        // هنا قائمة الـ IDs المسموحة - تقدر تضيف أي رقم جديد داخل القوسين وبين علامات التنصيص
+        const allowedIDs = ["user1", "admin", "15711", "10020025", "1002075", "1658237633"];
+        
         const bgMusic = document.getElementById('bg-music');
         const clickSound = document.getElementById('click-sound');
         const bombSound = document.getElementById('bomb-sound');
@@ -71,13 +73,11 @@
         function playSound(type) { if(type === 'click') { clickSound.currentTime = 0; clickSound.play(); } if(type === 'bomb') { bombSound.currentTime = 0; bombSound.play(); } }
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-        // باسورد النظام
         function validatePass() {
             if(document.getElementById('passInput').value === "15711") { bgMusic.play(); showScreen('screen-choice'); } 
             else { alert("باسورد النظام خطأ!"); }
         }
 
-        // دخول الـ VIP بالباسورد المخصص
         function askVipPass() {
             let p = prompt("أدخل باسورد دخول الـ VIP المخصص:");
             if(p === "102545") { playSound('click'); showScreen('screen-game'); initGame(); }
