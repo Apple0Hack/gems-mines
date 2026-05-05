@@ -27,7 +27,6 @@
 <body>
 
     <button id="mute-btn" onclick="toggleMute()">🔊</button>
-
     <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg"></audio>
     <audio id="click-sound"><source src="https://actions.google.com/sounds/v1/foley/button_click.ogg" type="audio/ogg"></audio>
     <audio id="bomb-sound"><source src="https://actions.google.com/sounds/v1/science_fiction/low_thud.ogg" type="audio/ogg"></audio>
@@ -61,7 +60,7 @@
             <div class="signal-bar" style="height:8px"></div>
             <div class="signal-bar" style="height:12px; animation-delay:0.2s"></div>
             <div class="signal-bar" style="height:16px; animation-delay:0.4s"></div>
-            <span id="status-text">ANALYZING SERVER... 99.8%</span>
+            <span>ANALYZING SERVER... 99.8%</span>
         </div>
         <div class="game-frame"><div class="grid" id="grid"></div></div>
         <div id="live-feed"><div id="feed-line">> Initializing security bypass...</div></div>
@@ -73,7 +72,6 @@
 
     <script>
         const allowedIDs = ["user1", "admin", "15711", "10020025", "1002075", "1658237633"];
-        
         const bgMusic = document.getElementById('bg-music');
         const clickSound = document.getElementById('click-sound');
         const bombSound = document.getElementById('bomb-sound');
@@ -88,15 +86,12 @@
             if(document.getElementById('passInput').value === "15711") { bgMusic.play(); showScreen('screen-choice'); } 
             else { alert("INVALID ACCESS KEY!"); }
         }
-
         function askVipPass() {
             let p = prompt("ENTER VIP SERVER PASSWORD:");
             if(p === "102545") { playSound('click'); showScreen('screen-game'); initGame(); setTimeout(() => updateFeed("VIP Connection established."), 1000); }
             else { alert("ACCESS DENIED!"); }
         }
-
         function goToID() { playSound('click'); showScreen('screen-id'); }
-
         function validateID() {
             const id = document.getElementById('idInput').value.trim();
             if(allowedIDs.includes(id)) { 
@@ -104,7 +99,6 @@
                 setTimeout(() => updateFeed("Trial User: " + id + " verified."), 1000);
             } else { alert("ERROR: ID NOT REGISTERED!"); }
         }
-
         let bombs = [2, 7, 12, 18]; 
         function initGame() {
             const g = document.getElementById('grid'); g.innerHTML = '';
