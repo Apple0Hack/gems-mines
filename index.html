@@ -3,22 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES - HHACK VIP</title>
+    <title>GEMS MINES - HHACK VIP PRO</title>
     <style>
         :root { --gold: #ffd700; --blue: #00d4ff; --bg: #000c18; --neon: 0 0 15px rgba(0, 212, 255, 0.6); }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle, #002b4d 0%, #000c18 100%); color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        
+        body, html { 
+            margin: 0; padding: 0; font-family: 'Consolas', 'Courier New', monospace; 
+            background: radial-gradient(circle, #001a33 0%, #00050a 100%); 
+            color: white; height: 100vh; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+
+        /* شريط الإشارة (Signal Strength) */
+        .signal-container {
+            display: flex; align-items: center; gap: 5px; margin-bottom: 10px;
+            font-size: 12px; color: var(--blue); text-shadow: var(--neon);
+        }
+        .signal-bar { width: 4px; background: var(--blue); border-radius: 2px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* سجل العمليات (Live Feed) */
+        #live-feed {
+            width: 100%; height: 50px; background: rgba(0,0,0,0.7);
+            border: 1px solid #004466; border-radius: 8px; margin-top: 15px;
+            font-size: 10px; overflow: hidden; text-align: left; padding: 5px;
+            color: #00ff00; /* لون الهكر التقليدي */
+        }
+
         #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
-        .glass-panel { background: rgba(0, 26, 51, 0.9); border: 2px solid var(--blue); box-shadow: var(--neon); border-radius: 20px; padding: 30px; text-align: center; width: 85%; max-width: 350px; }
+        .glass-panel { background: rgba(0, 26, 51, 0.95); border: 1px solid var(--blue); box-shadow: var(--neon); border-radius: 20px; padding: 25px; text-align: center; width: 85%; max-width: 350px; }
         .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
         .active { display: flex !important; }
-        .btn-3d { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 6px 0 #0088aa; background: linear-gradient(to bottom, #00d4ff, #00aacc); color: #001a33; transition: 0.2s; }
-        .btn-3d:active { transform: translateY(4px); box-shadow: 0 2px 0 #0088aa; }
-        .btn-vip { background: linear-gradient(145deg, #ffd700, #b8860b); box-shadow: 0 6px 0 #8a6d00; color: black; }
-        input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px; border: 2px solid var(--blue); background: #000; color: var(--blue); font-size: 20px; text-align: center; box-sizing: border-box; letter-spacing: 3px; }
-        .game-frame { border: 4px solid #34495e; padding: 10px; border-radius: 15px; background: #001a33; }
+        .btn-3d { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 5px 0 #0088aa; background: linear-gradient(to bottom, #00d4ff, #00aacc); color: #001a33; }
+        .btn-3d:active { transform: translateY(3px); box-shadow: 0 2px 0 #0088aa; }
+        .btn-vip { background: linear-gradient(145deg, #ffd700, #b8860b); box-shadow: 0 5px 0 #8a6d00; color: black; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--blue); background: #000; color: var(--blue); font-size: 20px; text-align: center; box-sizing: border-box; letter-spacing: 3px; }
+        .game-frame { border: 2px solid #004466; padding: 8px; border-radius: 15px; background: #000; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .cell { width: 55px; height: 55px; border-radius: 8px; cursor: pointer; background: linear-gradient(135deg, #1a3a5a, #0d1f2d); border: 1px solid #3498db; display: flex; align-items: center; justify-content: center; }
-        .crystal { font-size: 28px; filter: drop-shadow(0 0 5px var(--blue)); }
+        .cell { width: 55px; height: 55px; border-radius: 8px; cursor: pointer; background: #0a1a2a; border: 1px solid #1a3a5a; display: flex; align-items: center; justify-content: center; }
+        .crystal { font-size: 26px; }
     </style>
 </head>
 <body>
@@ -31,79 +54,113 @@
 
     <div id="screen-pass" class="screen active">
         <div class="glass-panel">
-            <h2 style="color:var(--gold)">SECURITY CHECK</h2>
-            <input type="password" id="passInput" placeholder="Password">
-            <button class="btn-3d" onclick="validatePass()">فتح النظام</button>
+            <h2 style="color:var(--gold)">SYSTEM ENCRYPTION</h2>
+            <input type="password" id="passInput" placeholder="ACCESS KEY">
+            <button class="btn-3d" onclick="validatePass()">DECRYPT</button>
         </div>
     </div>
 
     <div id="screen-choice" class="screen">
         <div class="glass-panel">
-            <h1 style="color:var(--blue)">HHACK VIP MENU</h1>
-            <button class="btn-3d" onclick="goToID()">تجربة مجانية</button>
-            <button class="btn-3d btn-vip" onclick="askVipPass()">🐉 VIP ACCESS</button>
+            <h1 style="color:var(--blue); font-size: 22px;">HHACK ANALYZER V3</h1>
+            <button class="btn-3d" onclick="goToID()">FREE TRIAL</button>
+            <button class="btn-3d btn-vip" onclick="askVipPass()">🐉 VIP SERVER ACCESS</button>
         </div>
     </div>
 
     <div id="screen-id" class="screen">
         <div class="glass-panel">
-            <h2>VERIFY ID</h2>
-            <input type="password" id="idInput" placeholder="User ID">
-            <button class="btn-3d" onclick="validateID()">دخول اللعبة</button>
+            <h2 style="color:var(--blue)">USER VALIDATION</h2>
+            <input type="password" id="idInput" placeholder="ENTER ID">
+            <button class="btn-3d" onclick="validateID()">CONNECT</button>
         </div>
     </div>
 
     <div id="screen-game" class="screen">
+        <div class="signal-container">
+            <div class="signal-bar" style="height:8px"></div>
+            <div class="signal-bar" style="height:12px; animation-delay:0.2s"></div>
+            <div class="signal-bar" style="height:16px; animation-delay:0.4s"></div>
+            <span id="status-text">ANALYZING SERVER... 99.8%</span>
+        </div>
+
         <div class="game-frame"><div class="grid" id="grid"></div></div>
-        <div class="glass-panel" style="margin-top: 20px; padding: 15px;">
-            <p>💎: <span id="s_score">0</span> | 💣: <span id="s_bombs">0</span></p>
-            <button class="btn-3d" style="background: #27ae60; color:white; box-shadow: 0 6px 0 #1e8449;" onclick="initGame()">لعبة جديدة</button>
+
+        <div id="live-feed">
+            <div id="feed-line">> Initializing security bypass...</div>
+        </div>
+
+        <div class="glass-panel" style="margin-top: 15px; padding: 10px; border-radius: 12px;">
+            <p style="margin: 5px 0; font-size: 14px;">GEMS: <span id="s_score" style="color:var(--blue)">0</span> | BOMBS: <span id="s_bombs" style="color:red">0</span></p>
+            <button class="btn-3d" style="background: #004466; color:white; padding: 10px; font-size: 14px;" onclick="initGame()">RE-SCAN GRID</button>
         </div>
     </div>
 
     <script>
-        // هنا قائمة الـ IDs المسموحة - تقدر تضيف أي رقم جديد داخل القوسين وبين علامات التنصيص
         const allowedIDs = ["user1", "admin", "15711", "10020025", "1002075", "1658237633"];
-        
         const bgMusic = document.getElementById('bg-music');
         const clickSound = document.getElementById('click-sound');
         const bombSound = document.getElementById('bomb-sound');
+        const feed = document.getElementById('feed-line');
 
         function toggleMute() { bgMusic.muted = !bgMusic.muted; document.getElementById('mute-btn').innerText = bgMusic.muted ? "🔇" : "🔊"; }
         function playSound(type) { if(type === 'click') { clickSound.currentTime = 0; clickSound.play(); } if(type === 'bomb') { bombSound.currentTime = 0; bombSound.play(); } }
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
+        function updateFeed(msg) {
+            feed.innerText = "> " + msg;
+        }
+
         function validatePass() {
             if(document.getElementById('passInput').value === "15711") { bgMusic.play(); showScreen('screen-choice'); } 
-            else { alert("باسورد النظام خطأ!"); }
+            else { alert("INVALID ACCESS KEY!"); }
         }
 
         function askVipPass() {
-            let p = prompt("أدخل باسورد دخول الـ VIP المخصص:");
-            if(p === "102545") { playSound('click'); showScreen('screen-game'); initGame(); }
-            else { alert("كود الـ VIP غير صحيح!"); }
+            let p = prompt("ENTER VIP SERVER PASSWORD:");
+            if(p === "102545") { 
+                playSound('click'); 
+                showScreen('screen-game'); 
+                initGame();
+                setTimeout(() => updateFeed("VIP Connection established. Patterns Ready."), 1000);
+            } else { alert("ACCESS DENIED!"); }
         }
 
         function goToID() { playSound('click'); showScreen('screen-id'); }
 
         function validateID() {
             const id = document.getElementById('idInput').value.trim();
-            if(allowedIDs.includes(id)) { playSound('click'); showScreen('screen-game'); initGame(); } 
-            else { alert("هذا الـ ID غير مسجل!"); }
+            if(allowedIDs.includes(id)) { 
+                playSound('click'); 
+                showScreen('screen-game'); 
+                initGame(); 
+                setTimeout(() => updateFeed("Trial User: " + id + " linked."), 1000);
+            } else { alert("ID NOT FOUND IN DATABASE!"); }
         }
 
-        let bombs = [0, 3];
+        let bombs = [2, 7, 12, 18]; // مجرد مثال للقنابل
         function initGame() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             document.getElementById('s_score').innerText = '0';
             document.getElementById('s_bombs').innerText = '0';
+            updateFeed("Scanning grid for patterns...");
+            
             for(let i=0; i<25; i++) {
                 let c = document.createElement('div');
                 c.className = 'cell';
                 c.onclick = () => {
                     if(c.innerHTML !== '') return;
-                    if(bombs.includes(i)) { playSound('bomb'); c.innerHTML = '<span class="crystal">💣</span>'; c.style.background = "linear-gradient(135deg, #ff4d4d, #800000)"; document.getElementById('s_bombs').innerText = "1"; } 
-                    else { playSound('click'); c.innerHTML = '<span class="crystal">💎</span>'; c.style.background = "linear-gradient(135deg, #00d4ff, #005f73)"; let s = document.getElementById('s_score'); s.innerText = parseInt(s.innerText) + 1; }
+                    if(bombs.includes(i)) { 
+                        playSound('bomb'); 
+                        c.innerHTML = '💣'; c.style.background = "#440000"; 
+                        document.getElementById('s_bombs').innerText = "1";
+                        updateFeed("WARNING: BOMB DETECTED AT NODE " + i);
+                    } else { 
+                        playSound('click'); 
+                        c.innerHTML = '💎'; c.style.background = "#004466"; 
+                        let s = document.getElementById('s_score'); s.innerText = parseInt(s.innerText) + 1;
+                        updateFeed("NODE " + i + " SECURED. GEM EXTRACTED.");
+                    }
                 };
                 g.appendChild(c);
             }
