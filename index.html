@@ -3,33 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES - HHACK VIP PRO</title>
+    <title>HHACK VIP - PRO ANALYZER</title>
     <style>
         :root { --gold: #ffd700; --blue: #00d4ff; --bg: #000c18; --neon: 0 0 15px rgba(0, 212, 255, 0.6); }
-        
-        body, html { 
-            margin: 0; padding: 0; font-family: 'Consolas', 'Courier New', monospace; 
-            background: radial-gradient(circle, #001a33 0%, #00050a 100%); 
-            color: white; height: 100vh; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; 
-        }
-
-        /* شريط الإشارة (Signal Strength) */
-        .signal-container {
-            display: flex; align-items: center; gap: 5px; margin-bottom: 10px;
-            font-size: 12px; color: var(--blue); text-shadow: var(--neon);
-        }
+        body, html { margin: 0; padding: 0; font-family: 'Consolas', monospace; background: radial-gradient(circle, #001a33 0%, #00050a 100%); color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .signal-container { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; font-size: 12px; color: var(--blue); text-shadow: var(--neon); }
         .signal-bar { width: 4px; background: var(--blue); border-radius: 2px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        /* سجل العمليات (Live Feed) */
-        #live-feed {
-            width: 100%; height: 50px; background: rgba(0,0,0,0.7);
-            border: 1px solid #004466; border-radius: 8px; margin-top: 15px;
-            font-size: 10px; overflow: hidden; text-align: left; padding: 5px;
-            color: #00ff00; /* لون الهكر التقليدي */
-        }
-
+        #live-feed { width: 100%; height: 50px; background: rgba(0,0,0,0.7); border: 1px solid #004466; border-radius: 8px; margin-top: 15px; font-size: 10px; overflow: hidden; text-align: left; padding: 5px; color: #00ff00; }
         #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
         .glass-panel { background: rgba(0, 26, 51, 0.95); border: 1px solid var(--blue); box-shadow: var(--neon); border-radius: 20px; padding: 25px; text-align: center; width: 85%; max-width: 350px; }
         .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
@@ -41,7 +22,6 @@
         .game-frame { border: 2px solid #004466; padding: 8px; border-radius: 15px; background: #000; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .cell { width: 55px; height: 55px; border-radius: 8px; cursor: pointer; background: #0a1a2a; border: 1px solid #1a3a5a; display: flex; align-items: center; justify-content: center; }
-        .crystal { font-size: 26px; }
     </style>
 </head>
 <body>
@@ -83,13 +63,8 @@
             <div class="signal-bar" style="height:16px; animation-delay:0.4s"></div>
             <span id="status-text">ANALYZING SERVER... 99.8%</span>
         </div>
-
         <div class="game-frame"><div class="grid" id="grid"></div></div>
-
-        <div id="live-feed">
-            <div id="feed-line">> Initializing security bypass...</div>
-        </div>
-
+        <div id="live-feed"><div id="feed-line">> Initializing security bypass...</div></div>
         <div class="glass-panel" style="margin-top: 15px; padding: 10px; border-radius: 12px;">
             <p style="margin: 5px 0; font-size: 14px;">GEMS: <span id="s_score" style="color:var(--blue)">0</span> | BOMBS: <span id="s_bombs" style="color:red">0</span></p>
             <button class="btn-3d" style="background: #004466; color:white; padding: 10px; font-size: 14px;" onclick="initGame()">RE-SCAN GRID</button>
@@ -97,7 +72,9 @@
     </div>
 
     <script>
+        // القائمة المحدثة بالـ ID الجديد
         const allowedIDs = ["user1", "admin", "15711", "10020025", "1002075", "1658237633"];
+        
         const bgMusic = document.getElementById('bg-music');
         const clickSound = document.getElementById('click-sound');
         const bombSound = document.getElementById('bomb-sound');
@@ -106,10 +83,7 @@
         function toggleMute() { bgMusic.muted = !bgMusic.muted; document.getElementById('mute-btn').innerText = bgMusic.muted ? "🔇" : "🔊"; }
         function playSound(type) { if(type === 'click') { clickSound.currentTime = 0; clickSound.play(); } if(type === 'bomb') { bombSound.currentTime = 0; bombSound.play(); } }
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-
-        function updateFeed(msg) {
-            feed.innerText = "> " + msg;
-        }
+        function updateFeed(msg) { feed.innerText = "> " + msg; }
 
         function validatePass() {
             if(document.getElementById('passInput').value === "15711") { bgMusic.play(); showScreen('screen-choice'); } 
@@ -118,12 +92,8 @@
 
         function askVipPass() {
             let p = prompt("ENTER VIP SERVER PASSWORD:");
-            if(p === "102545") { 
-                playSound('click'); 
-                showScreen('screen-game'); 
-                initGame();
-                setTimeout(() => updateFeed("VIP Connection established. Patterns Ready."), 1000);
-            } else { alert("ACCESS DENIED!"); }
+            if(p === "102545") { playSound('click'); showScreen('screen-game'); initGame(); setTimeout(() => updateFeed("VIP Connection established."), 1000); }
+            else { alert("ACCESS DENIED!"); }
         }
 
         function goToID() { playSound('click'); showScreen('screen-id'); }
@@ -131,36 +101,24 @@
         function validateID() {
             const id = document.getElementById('idInput').value.trim();
             if(allowedIDs.includes(id)) { 
-                playSound('click'); 
-                showScreen('screen-game'); 
-                initGame(); 
-                setTimeout(() => updateFeed("Trial User: " + id + " linked."), 1000);
-            } else { alert("ID NOT FOUND IN DATABASE!"); }
+                playSound('click'); showScreen('screen-game'); initGame(); 
+                setTimeout(() => updateFeed("Trial User: " + id + " verified."), 1000);
+            } else { alert("هذا الـ ID غير مسجل!"); }
         }
 
-        let bombs = [2, 7, 12, 18]; // مجرد مثال للقنابل
+        let bombs = [2, 7, 12, 18]; 
         function initGame() {
             const g = document.getElementById('grid'); g.innerHTML = '';
             document.getElementById('s_score').innerText = '0';
             document.getElementById('s_bombs').innerText = '0';
-            updateFeed("Scanning grid for patterns...");
-            
+            updateFeed("Scanning grid...");
             for(let i=0; i<25; i++) {
                 let c = document.createElement('div');
                 c.className = 'cell';
                 c.onclick = () => {
                     if(c.innerHTML !== '') return;
-                    if(bombs.includes(i)) { 
-                        playSound('bomb'); 
-                        c.innerHTML = '💣'; c.style.background = "#440000"; 
-                        document.getElementById('s_bombs').innerText = "1";
-                        updateFeed("WARNING: BOMB DETECTED AT NODE " + i);
-                    } else { 
-                        playSound('click'); 
-                        c.innerHTML = '💎'; c.style.background = "#004466"; 
-                        let s = document.getElementById('s_score'); s.innerText = parseInt(s.innerText) + 1;
-                        updateFeed("NODE " + i + " SECURED. GEM EXTRACTED.");
-                    }
+                    if(bombs.includes(i)) { playSound('bomb'); c.innerHTML = '💣'; c.style.background = "#440000"; document.getElementById('s_bombs').innerText = "1"; updateFeed("BOMB DETECTED."); } 
+                    else { playSound('click'); c.innerHTML = '💎'; c.style.background = "#004466"; let s = document.getElementById('s_score'); s.innerText = parseInt(s.innerText) + 1; updateFeed("NODE " + i + " SECURED."); }
                 };
                 g.appendChild(c);
             }
