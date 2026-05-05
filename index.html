@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES - PRO VIP AUDIO</title>
+    <title>GEMS MINES - SECURE PRO</title>
     <style>
         :root {
             --gold: #ffd700;
@@ -19,7 +19,6 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* زر كتم الصوت */
         #mute-btn {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: rgba(0,0,0,0.5); border: 1px solid var(--blue);
@@ -51,6 +50,7 @@
             width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px;
             border: 2px solid var(--blue); background: #000; color: var(--blue);
             font-size: 20px; text-align: center; box-sizing: border-box;
+            letter-spacing: 3px; /* لإعطاء شكل جمالي للنجوم */
         }
 
         .game-frame { border: 4px solid #34495e; padding: 10px; border-radius: 15px; background: #001a33; }
@@ -76,7 +76,8 @@
     <div id="screen-pass" class="screen active">
         <div class="glass-panel">
             <h2 style="color:var(--gold)">SECURITY CHECK</h2>
-            <input type="password" id="passInput" placeholder="Password">
+            <p>كلمة مرور النظام</p>
+            <input type="password" id="passInput" placeholder="••••••••">
             <button class="btn-3d" onclick="validatePass()">فتح النظام</button>
         </div>
     </div>
@@ -91,8 +92,9 @@
 
     <div id="screen-id" class="screen">
         <div class="glass-panel">
-            <h2>VERIFY ID</h2>
-            <input type="text" id="idInput" placeholder="User ID">
+            <h2 style="color:var(--blue)">VERIFY ID</h2>
+            <p>أدخل كود المستخدم</p>
+            <input type="password" id="idInput" placeholder="User ID Code">
             <button class="btn-3d" onclick="validateID()">دخول اللعبة</button>
         </div>
     </div>
@@ -123,9 +125,9 @@
 
         function validatePass() {
             if(document.getElementById('passInput').value === "15711") {
-                bgMusic.play(); // تبدأ الموسيقى عند أول دخول ناجح
+                bgMusic.play();
                 showScreen('screen-choice');
-            } else { alert("خطأ!"); }
+            } else { alert("خطأ في كلمة المرور!"); }
         }
 
         function goToID() { playSound('click'); showScreen('screen-id'); }
@@ -136,7 +138,7 @@
                 playSound('click');
                 showScreen('screen-game');
                 initGame();
-            } else { alert("ID غير مسجل!"); }
+            } else { alert("هذا الـ ID غير مسجل في قواعد بياناتنا!"); }
         }
 
         function showScreen(id) {
@@ -157,12 +159,12 @@
                     if(bombs.includes(i)) {
                         playSound('bomb');
                         c.innerHTML = '<span class="crystal">💣</span>';
-                        c.style.background = "red";
+                        c.style.background = "linear-gradient(135deg, #ff4d4d, #800000)";
                         document.getElementById('s_bombs').innerText = "1";
                     } else {
                         playSound('click');
                         c.innerHTML = '<span class="crystal">💎</span>';
-                        c.style.background = "var(--blue)";
+                        c.style.background = "linear-gradient(135deg, #00d4ff, #005f73)";
                         let s = document.getElementById('s_score');
                         s.innerText = parseInt(s.innerText) + 1;
                     }
