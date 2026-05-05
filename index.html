@@ -3,63 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES - SECURE PRO</title>
+    <title>GEMS MINES - HHack VIP</title>
     <style>
-        :root {
-            --gold: #ffd700;
-            --blue: #00d4ff;
-            --dark-blue: #000c18;
-            --neon: 0 0 15px rgba(0, 212, 255, 0.6);
-        }
-
-        body, html {
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle, #002b4d 0%, #000c18 100%);
-            color: white; height: 100vh; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        #mute-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 1000;
-            background: rgba(0,0,0,0.5); border: 1px solid var(--blue);
-            color: white; padding: 10px; border-radius: 50%; cursor: pointer;
-        }
-
-        .glass-panel {
-            background: rgba(0, 26, 51, 0.9);
-            border: 2px solid var(--blue);
-            box-shadow: var(--neon);
-            border-radius: 20px; padding: 30px; text-align: center;
-            width: 85%; max-width: 350px;
-        }
-
+        :root { --gold: #ffd700; --blue: #00d4ff; --bg: #000c18; --neon: 0 0 15px rgba(0, 212, 255, 0.6); }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle, #002b4d 0%, #000c18 100%); color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
+        .glass-panel { background: rgba(0, 26, 51, 0.9); border: 2px solid var(--blue); box-shadow: var(--neon); border-radius: 20px; padding: 30px; text-align: center; width: 85%; max-width: 350px; }
         .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
         .active { display: flex !important; }
-
-        .btn-3d {
-            width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px;
-            font-weight: bold; font-size: 18px; cursor: pointer;
-            box-shadow: 0 6px 0 #0088aa;
-            background: linear-gradient(to bottom, #00d4ff, #00aacc); color: #001a33;
-        }
+        .btn-3d { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 6px 0 #0088aa; background: linear-gradient(to bottom, #00d4ff, #00aacc); color: #001a33; transition: 0.2s; }
         .btn-3d:active { transform: translateY(4px); box-shadow: 0 2px 0 #0088aa; }
-
         .btn-vip { background: linear-gradient(145deg, #ffd700, #b8860b); box-shadow: 0 6px 0 #8a6d00; color: black; }
-
-        input {
-            width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px;
-            border: 2px solid var(--blue); background: #000; color: var(--blue);
-            font-size: 20px; text-align: center; box-sizing: border-box;
-            letter-spacing: 3px; /* لإعطاء شكل جمالي للنجوم */
-        }
-
+        input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px; border: 2px solid var(--blue); background: #000; color: var(--blue); font-size: 20px; text-align: center; box-sizing: border-box; letter-spacing: 3px; }
         .game-frame { border: 4px solid #34495e; padding: 10px; border-radius: 15px; background: #001a33; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .cell {
-            width: 55px; height: 55px; border-radius: 8px; cursor: pointer;
-            background: linear-gradient(135deg, #1a3a5a, #0d1f2d);
-            border: 1px solid #3498db; display: flex; align-items: center; justify-content: center;
-        }
+        .cell { width: 55px; height: 55px; border-radius: 8px; cursor: pointer; background: linear-gradient(135deg, #1a3a5a, #0d1f2d); border: 1px solid #3498db; display: flex; align-items: center; justify-content: center; }
         .crystal { font-size: 28px; filter: drop-shadow(0 0 5px var(--blue)); }
     </style>
 </head>
@@ -67,34 +25,30 @@
 
     <button id="mute-btn" onclick="toggleMute()">🔊</button>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg"></audio>
     <audio id="click-sound"><source src="https://actions.google.com/sounds/v1/foley/button_click.ogg" type="audio/ogg"></audio>
     <audio id="bomb-sound"><source src="https://actions.google.com/sounds/v1/science_fiction/low_thud.ogg" type="audio/ogg"></audio>
 
     <div id="screen-pass" class="screen active">
         <div class="glass-panel">
             <h2 style="color:var(--gold)">SECURITY CHECK</h2>
-            <p>كلمة مرور النظام</p>
-            <input type="password" id="passInput" placeholder="••••••••">
+            <input type="password" id="passInput" placeholder="Password">
             <button class="btn-3d" onclick="validatePass()">فتح النظام</button>
         </div>
     </div>
 
     <div id="screen-choice" class="screen">
         <div class="glass-panel">
-            <h1 style="color:var(--blue)">GEMS MINES PRO</h1>
+            <h1 style="color:var(--blue)">HHACK VIP MENU</h1>
             <button class="btn-3d" onclick="goToID()">تجربة مجانية</button>
-            <button class="btn-3d btn-vip" onclick="goToID()">🐉 VIP ACCESS</button>
+            <button class="btn-3d btn-vip" onclick="askVipPass()">🐉 VIP ACCESS</button>
         </div>
     </div>
 
     <div id="screen-id" class="screen">
         <div class="glass-panel">
-            <h2 style="color:var(--blue)">VERIFY ID</h2>
-            <p>أدخل كود المستخدم</p>
-            <input type="password" id="idInput" placeholder="User ID Code">
+            <h2>VERIFY ID</h2>
+            <input type="password" id="idInput" placeholder="User ID">
             <button class="btn-3d" onclick="validateID()">دخول اللعبة</button>
         </div>
     </div>
@@ -103,7 +57,7 @@
         <div class="game-frame"><div class="grid" id="grid"></div></div>
         <div class="glass-panel" style="margin-top: 20px; padding: 15px;">
             <p>💎: <span id="s_score">0</span> | 💣: <span id="s_bombs">0</span></p>
-            <button class="btn-3d" style="background: #27ae60; color:white;" onclick="initGame()">لعبة جديدة</button>
+            <button class="btn-3d" style="background: #27ae60; color:white; box-shadow: 0 6px 0 #1e8449;" onclick="initGame()">لعبة جديدة</button>
         </div>
     </div>
 
@@ -113,37 +67,29 @@
         const clickSound = document.getElementById('click-sound');
         const bombSound = document.getElementById('bomb-sound');
 
-        function toggleMute() {
-            bgMusic.muted = !bgMusic.muted;
-            document.getElementById('mute-btn').innerText = bgMusic.muted ? "🔇" : "🔊";
-        }
+        function toggleMute() { bgMusic.muted = !bgMusic.muted; document.getElementById('mute-btn').innerText = bgMusic.muted ? "🔇" : "🔊"; }
+        function playSound(type) { if(type === 'click') { clickSound.currentTime = 0; clickSound.play(); } if(type === 'bomb') { bombSound.currentTime = 0; bombSound.play(); } }
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-        function playSound(type) {
-            if(type === 'click') { clickSound.currentTime = 0; clickSound.play(); }
-            if(type === 'bomb') { bombSound.currentTime = 0; bombSound.play(); }
-        }
-
+        // باسورد النظام
         function validatePass() {
-            if(document.getElementById('passInput').value === "15711") {
-                bgMusic.play();
-                showScreen('screen-choice');
-            } else { alert("خطأ في كلمة المرور!"); }
+            if(document.getElementById('passInput').value === "15711") { bgMusic.play(); showScreen('screen-choice'); } 
+            else { alert("باسورد النظام خطأ!"); }
+        }
+
+        // دخول الـ VIP بالباسورد المخصص
+        function askVipPass() {
+            let p = prompt("أدخل باسورد دخول الـ VIP المخصص:");
+            if(p === "102545") { playSound('click'); showScreen('screen-game'); initGame(); }
+            else { alert("كود الـ VIP غير صحيح!"); }
         }
 
         function goToID() { playSound('click'); showScreen('screen-id'); }
 
         function validateID() {
             const id = document.getElementById('idInput').value.trim();
-            if(allowedIDs.includes(id)) {
-                playSound('click');
-                showScreen('screen-game');
-                initGame();
-            } else { alert("هذا الـ ID غير مسجل في قواعد بياناتنا!"); }
-        }
-
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            if(allowedIDs.includes(id)) { playSound('click'); showScreen('screen-game'); initGame(); } 
+            else { alert("هذا الـ ID غير مسجل!"); }
         }
 
         let bombs = [0, 3];
@@ -156,18 +102,8 @@
                 c.className = 'cell';
                 c.onclick = () => {
                     if(c.innerHTML !== '') return;
-                    if(bombs.includes(i)) {
-                        playSound('bomb');
-                        c.innerHTML = '<span class="crystal">💣</span>';
-                        c.style.background = "linear-gradient(135deg, #ff4d4d, #800000)";
-                        document.getElementById('s_bombs').innerText = "1";
-                    } else {
-                        playSound('click');
-                        c.innerHTML = '<span class="crystal">💎</span>';
-                        c.style.background = "linear-gradient(135deg, #00d4ff, #005f73)";
-                        let s = document.getElementById('s_score');
-                        s.innerText = parseInt(s.innerText) + 1;
-                    }
+                    if(bombs.includes(i)) { playSound('bomb'); c.innerHTML = '<span class="crystal">💣</span>'; c.style.background = "linear-gradient(135deg, #ff4d4d, #800000)"; document.getElementById('s_bombs').innerText = "1"; } 
+                    else { playSound('click'); c.innerHTML = '<span class="crystal">💎</span>'; c.style.background = "linear-gradient(135deg, #00d4ff, #005f73)"; let s = document.getElementById('s_score'); s.innerText = parseInt(s.innerText) + 1; }
                 };
                 g.appendChild(c);
             }
