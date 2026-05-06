@@ -1,224 +1,124 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GEMS MINES VIP</title>
-
-<style>
-:root {
-    --gold: #ffd700;
-    --electric-blue: #00d4ff;
-    --bg-dark: #000c18;
-    --vip-red: #ff3e3e;
-}
-
-body {
-    margin: 0;
-    font-family: Arial;
-    background: var(--bg-dark);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-}
-
-.main-title {
-    font-size: 35px;
-    color: var(--gold);
-    margin-bottom: 40px;
-}
-
-.btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 250px;
-}
-
-button {
-    padding: 15px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn-trial {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-}
-
-.btn-vip {
-    background: gold;
-    color: black;
-    font-weight: bold;
-}
-
-.auth-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-}
-
-.active {
-    display: flex;
-}
-
-input {
-    padding: 10px;
-    margin: 10px;
-    width: 200px;
-    text-align: center;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
-}
-
-.cell {
-    width: 50px;
-    height: 50px;
-    background: #1a5a8a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.gem { background: #00d4ff; }
-.bomb { background: red; }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMS MINES VIP - MONTHLY LIMIT</title>
+    <style>
+        :root { --gold: #ffd700; --blue: #00d4ff; --dark: #000a15; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle, #001f3f 0%, #000 100%); color: white; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .container { background: rgba(0, 10, 20, 0.95); border: 2px solid var(--gold); padding: 35px 25px; border-radius: 25px; text-align: center; width: 330px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); transform: perspective(1000px); }
+        .title { font-size: 24px; color: var(--gold); margin-bottom: 25px; font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+        .btn-3d { width: 100%; padding: 15px; margin: 12px 0; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 17px; transition: 0.2s; position: relative; }
+        .btn-gold { background: linear-gradient(145deg, #ffd700, #b8860b); color: #000; box-shadow: 0 6px 0 #8a6d00, 0 10px 20px rgba(0,0,0,0.3); }
+        .btn-gold:active { transform: translateY(4px); box-shadow: 0 2px 0 #8a6d00; }
+        .btn-outline { background: #001529; color: white; border: 1px solid var(--blue); box-shadow: 0 6px 0 #000; }
+        .btn-outline:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #000; }
+        .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 2px solid #1a3a5a; background: #000; color: var(--blue); text-align: center; font-size: 19px; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 15px; }
+        .cell { width: 52px; height: 52px; background: linear-gradient(145deg, #0d253f, #1a3a5a); border: 1px solid #2a4a7a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; box-shadow: 0 4px 0 #000; }
+        .attempts-box { background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 10px; border: 1px dashed var(--gold); margin-top: 15px; font-size: 13px; }
+        .hidden { display: none; }
+    </style>
 </head>
-
 <body>
 
-<div id="landing">
-    <div class="main-title">GEMS MINES VIP</div>
-
-    <div class="btn-group">
-        <button class="btn-trial" onclick="showTrial()">تجربة مجانية</button>
-        <button class="btn-vip" onclick="showVIP()">VIP ACCESS</button>
+    <div id="screen-pass" class="container">
+        <div class="title">نظام التشفير VIP</div>
+        <input type="password" id="mainKey" placeholder="ادخل كود الدخول">
+        <button class="btn-3d btn-gold" onclick="login()">فتح النظام</button>
     </div>
-</div>
 
-<div id="idScreen" class="auth-screen">
-    <h3>ادخل ID</h3>
-    <input id="idInput">
-    <button onclick="checkID()">استمرار</button>
-</div>
+    <div id="screen-id" class="container hidden">
+        <div class="title">هوية المستخدم</div>
+        <input type="text" id="pID" placeholder="ID اللاعب">
+        <button class="btn-3d btn-gold" onclick="checkID()">بدء الرادار</button>
+    </div>
 
-<div id="passScreen" class="auth-screen">
-    <h3>ادخل الباسورد</h3>
-    <input id="passInput" type="password">
-    <button onclick="checkPass()">دخول</button>
-</div>
+    <div id="screen-game" class="container hidden" style="width: 340px;">
+        <div class="title" style="font-size: 18px;">الرادار المطور V3</div>
+        <div class="grid" id="gameGrid"></div>
+        <div class="attempts-box">
+            متبقي لك <span id="tries" style="font-weight:bold; color:var(--gold)">3</span> محاولات لهذا الشهر
+        </div>
+        <button id="rescanBtn" class="btn-3d btn-outline" onclick="rescan()">إعادة المسح (Scan)</button>
+        <p style="font-size: 12px; margin-top: 5px; color: #888;">💎: <span id="s1">0</span> | 💣: <span id="s2">0</span></p>
+    </div>
 
-<div id="gameScreen" class="auth-screen">
-    <div id="grid" class="grid"></div>
-    <p>💎 <span id="score">0</span> | 💣 <span id="bombs">0</span></p>
-</div>
+    <script>
+        const allowedIDs = ["1658237633", "1002075"];
+        const MONTH_MS = 30 * 24 * 60 * 60 * 1000; // 30 يوم بالملي ثانية
 
-<script>
+        // تحميل البيانات من الذاكرة
+        let savedTries = localStorage.getItem('monthlyTries') ? parseInt(localStorage.getItem('monthlyTries')) : 3;
+        let lastReset = localStorage.getItem('lastResetTime') ? parseInt(localStorage.getItem('lastResetTime')) : Date.now();
 
-// IDs
-const allowedIDs = ["1658237633", "1002075"];
-
-// عرض التجربة
-function showTrial() {
-    document.getElementById("landing").style.display = "none";
-    document.getElementById("idScreen").classList.add("active");
-}
-
-// VIP
-function showVIP() {
-    let pass = prompt("ادخل باسورد VIP");
-    if(pass === "102545") {
-        startGame();
-    } else {
-        alert("باسورد غلط");
-    }
-}
-
-// تحقق ID
-function checkID() {
-    let id = document.getElementById("idInput").value;
-
-    if(!allowedIDs.includes(id)) {
-        alert("ID غير صحيح");
-        return;
-    }
-
-    if(localStorage.getItem("used_"+id)) {
-        alert("الـ ID ده اتستخدم قبل كده");
-        return;
-    }
-
-    localStorage.setItem("currentID", id);
-
-    document.getElementById("idScreen").classList.remove("active");
-    document.getElementById("passScreen").classList.add("active");
-}
-
-// تحقق باسورد
-function checkPass() {
-    let pass = document.getElementById("passInput").value;
-
-    if(pass === "15711") {
-        let id = localStorage.getItem("currentID");
-        localStorage.setItem("used_"+id, "true");
-        startGame();
-    } else {
-        alert("باسورد غلط");
-    }
-}
-
-// بدء اللعبة
-let bombs = [0,3];
-let score = 0;
-let bombCount = 0;
-
-function startGame() {
-    document.getElementById("passScreen").classList.remove("active");
-    document.getElementById("gameScreen").classList.add("active");
-
-    let grid = document.getElementById("grid");
-    grid.innerHTML = "";
-    score = 0;
-    bombCount = 0;
-
-    for(let i=0;i<25;i++) {
-        let cell = document.createElement("div");
-        cell.className = "cell";
-
-        cell.onclick = function() {
-            if(cell.innerHTML !== "") return;
-
-            if(bombs.includes(i)) {
-                cell.innerHTML = "💣";
-                cell.classList.add("bomb");
-                bombCount++;
-            } else {
-                cell.innerHTML = "💎";
-                cell.classList.add("gem");
-                score++;
-            }
-
-            document.getElementById("score").innerText = score;
-            document.getElementById("bombs").innerText = bombCount;
+        // فحص لو مر شهر
+        if (Date.now() - lastReset > MONTH_MS) {
+            savedTries = 3;
+            lastReset = Date.now();
+            localStorage.setItem('monthlyTries', 3);
+            localStorage.setItem('lastResetTime', lastReset);
         }
 
-        grid.appendChild(cell);
-    }
-}
+        function login() {
+            if(document.getElementById('mainKey').value === "15711") {
+                document.getElementById('screen-pass').classList.add('hidden');
+                document.getElementById('screen-id').classList.remove('hidden');
+            } else alert("الكود خطأ!");
+        }
 
-</script>
+        function checkID() {
+            let id = document.getElementById('pID').value;
+            if(allowedIDs.includes(id)) {
+                document.getElementById('screen-id').classList.add('hidden');
+                document.getElementById('screen-game').classList.remove('hidden');
+                updateDisplay();
+                renderGrid();
+            } else alert("ID غير مسجل!");
+        }
 
+        function renderGrid() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = "";
+            const bombs = [0, 3]; 
+            for(let i=0; i<25; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onclick = () => {
+                    if(cell.innerHTML !== "") return;
+                    if(bombs.includes(i)) {
+                        cell.innerHTML = "💣"; cell.style.background = "rgba(255,0,0,0.2)";
+                        document.getElementById('s2').innerText = "1";
+                    } else {
+                        cell.innerHTML = "💎"; cell.style.background = "rgba(0,212,255,0.2)";
+                        let s = document.getElementById('s1');
+                        s.innerText = parseInt(s.innerText) + 1;
+                    }
+                };
+                grid.appendChild(cell);
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('tries').innerText = savedTries;
+            if (savedTries <= 0) {
+                document.getElementById('rescanBtn').disabled = true;
+                document.getElementById('rescanBtn').innerText = "انتهت محاولات الشهر!";
+            }
+        }
+
+        function rescan() {
+            if(savedTries > 0) {
+                savedTries--;
+                localStorage.setItem('monthlyTries', savedTries);
+                updateDisplay();
+                renderGrid();
+                document.getElementById('s1').innerText = "0";
+                document.getElementById('s2').innerText = "0";
+            }
+        }
+    </script>
 </body>
 </html>
