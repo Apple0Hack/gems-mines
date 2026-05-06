@@ -3,45 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEMS MINES VIP - SECURE EDITION</title>
+    <title>GEMS MINES VIP - ELITE MUSIC</title>
     <style>
         :root { --gold: #ffd700; --blue: #00d4ff; --neon: 0 0 15px rgba(255, 215, 0, 0.7); }
-        
-        /* تثبيت الاتجاه لمنع الاهتزاز يمين وشمال */
         * { box-sizing: border-box; direction: ltr !important; } 
-
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #000; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-
         .status-bar { position: absolute; top: 0; width: 100%; background: rgba(0, 212, 255, 0.1); border-bottom: 1px solid var(--blue); padding: 5px 0; overflow: hidden; white-space: nowrap; z-index: 10; }
         .status-text { display: inline-block; animation: scrollText 15s linear infinite; color: var(--blue); font-size: 11px; font-weight: bold; }
         @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        .container { background: rgba(0, 10, 25, 0.98); border: 2px solid var(--gold); padding: 40px 25px; border-radius: 30px; text-align: center; width: 340px; box-shadow: var(--neon); position: relative; backdrop-filter: blur(10px); }
-        
+        .container { background: rgba(0, 10, 25, 0.98); border: 2px solid var(--gold); padding: 40px 25px; border-radius: 30px; text-align: center; width: 340px; box-shadow: var(--neon); position: relative; backdrop-filter: blur(10px); z-index: 5; }
         .neon-line { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 120px; height: 4px; background: var(--gold); box-shadow: 0 0 15px var(--gold); border-radius: 10px; }
-
-        .title { font-size: 24px; color: var(--gold); margin-bottom: 30px; font-weight: 900; text-shadow: 0 0 15px var(--gold); text-align: center; }
-
+        .title { font-size: 24px; color: var(--gold); margin-bottom: 30px; font-weight: 900; text-shadow: 0 0 15px var(--gold); }
         .btn-3d { width: 100%; padding: 16px; margin: 12px 0; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 17px; transition: 0.2s; position: relative; }
         .btn-gold { background: linear-gradient(145deg, #ffd700, #b8860b); color: #000; box-shadow: 0 6px 0 #8a6d00; }
         .btn-gold:active { transform: translateY(4px); box-shadow: 0 2px 0 #8a6d00; }
-        
         .btn-outline { background: transparent; color: var(--blue); border: 1px solid var(--blue); margin-top: 10px; }
-
         input { width: 100%; padding: 16px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #1a3a5a; background: #000; color: var(--blue); text-align: center; font-size: 18px; }
-
-        /* شبكة اللعبة ثابتة تماماً */
         .grid { display: grid; grid-template-columns: repeat(5, 52px); gap: 8px; justify-content: center; margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 15px; }
-        .cell { width: 52px; height: 52px; background: #0a1a2a; border: 1px solid #1a3a5a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-
-        .attempts-box { background: rgba(0, 212, 255, 0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.3); margin-top: 15px; font-size: 13px; color: var(--blue); }
+        .cell { width: 52px; height: 52px; background: #0a1a2a; border: 1px solid #1a3a5a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; }
         .hidden { display: none !important; }
+        #music-ctrl { position: absolute; bottom: 20px; right: 20px; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 20; }
     </style>
 </head>
 <body>
 
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="https://www.myinstants.com/media/sounds/button-3.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="music-ctrl" onclick="toggleMusic()">🔊</button>
+
     <div class="status-bar">
-        <div class="status-text">SYSTEM SECURE... BYPASSING ENCRYPTION... SERVER CONNECTED... SCANNING...</div>
+        <div class="status-text">ENCRYPTED CONNECTION ESTABLISHED... SYSTEM READY... PLAYING AUDIO...</div>
     </div>
 
     <div id="screen-pass" class="container">
@@ -54,41 +50,47 @@
     <div id="screen-choice" class="container hidden">
         <div class="neon-line"></div>
         <div class="title">SELECT LEVEL</div>
-        <button class="btn-3d btn-gold" onclick="showID()">FREE TRIAL (ID REQUIRED)</button>
-        <button class="btn-3d btn-outline" style="border-color: #f00; color: #f00;" onclick="vipAccess()">VIP ACCESS (ENCRYPTED)</button>
+        <button class="btn-3d btn-gold" onclick="playClick(); showID()">FREE TRIAL</button>
+        <button class="btn-3d btn-outline" style="border-color: #f00; color: #f00;" onclick="playClick(); vipAccess()">VIP ACCESS</button>
     </div>
 
     <div id="screen-id" class="container hidden">
         <div class="neon-line"></div>
         <div class="title">ID VERIFICATION</div>
         <input type="text" id="pID" placeholder="PLAYER ID">
-        <button class="btn-3d btn-gold" onclick="checkID()">START RADAR</button>
+        <button class="btn-3d btn-gold" onclick="playClick(); checkID()">START RADAR</button>
     </div>
 
     <div id="screen-game" class="container hidden">
         <div class="neon-line"></div>
         <div class="title" id="game-title">RADAR SCANNER</div>
         <div class="grid" id="gameGrid"></div>
-        <div class="attempts-box">
-            ATTEMPTS: <span id="tries" style="color:var(--gold)">3</span>/3
-        </div>
-        <button id="rescanBtn" class="btn-3d btn-outline" onclick="rescan()">RE-SCAN AREA</button>
+        <button id="rescanBtn" class="btn-3d btn-outline" onclick="playClick(); rescan()">RE-SCAN AREA</button>
     </div>
 
     <script>
         const allowedIDs = ["1658237633", "1002075"];
-        let tries = localStorage.getItem('monthlyTries') ? parseInt(localStorage.getItem('monthlyTries')) : 3;
+        const music = document.getElementById('bg-music');
+        const clickSnd = document.getElementById('click-sound');
 
-        function hideAll() { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); }
+        function playClick() { clickSnd.play(); }
+
+        function toggleMusic() {
+            if (music.paused) { music.play(); document.getElementById('music-ctrl').innerText = "🔊"; }
+            else { music.pause(); document.getElementById('music-ctrl').innerText = "🔈"; }
+        }
 
         function login() {
+            playClick();
             if(document.getElementById('mainKey').value === "15711") {
+                music.play(); // تبدأ الموسيقى بمجرد الدخول
                 hideAll(); document.getElementById('screen-choice').classList.remove('hidden');
             } else alert("WRONG PASSWORD!");
         }
 
+        function hideAll() { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); }
         function showID() { hideAll(); document.getElementById('screen-id').classList.remove('hidden'); }
-
+        
         function vipAccess() {
             let p = prompt("ENTER VIP PRIVATE KEY:");
             if(p === "102545") {
@@ -101,7 +103,7 @@
         function checkID() {
             if(allowedIDs.includes(document.getElementById('pID').value)) {
                 hideAll(); document.getElementById('screen-game').classList.remove('hidden');
-                updateDisplay(); renderGrid();
+                renderGrid();
             } else alert("ID NOT FOUND!");
         }
 
@@ -113,6 +115,7 @@
                 let cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.onclick = () => {
+                    playClick();
                     if(cell.innerHTML !== "") return;
                     if(bombs.includes(i)) {
                         cell.innerHTML = "💣"; cell.style.background = "rgba(255,0,0,0.2)";
@@ -121,22 +124,6 @@
                     }
                 };
                 grid.appendChild(cell);
-            }
-        }
-
-        function updateDisplay() {
-            document.getElementById('tries').innerText = tries;
-            if(tries <= 0) {
-                document.getElementById('rescanBtn').disabled = true;
-                document.getElementById('rescanBtn').innerText = "LIMIT REACHED";
-            }
-        }
-
-        function rescan() {
-            if(tries > 0) {
-                tries--;
-                localStorage.setItem('monthlyTries', tries);
-                updateDisplay(); renderGrid();
             }
         }
     </script>
