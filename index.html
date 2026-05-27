@@ -1,180 +1,159 @@
-import { useState } from 'react';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 المزرعة السعيدة</title>
+    <!-- استدعاء مكتبة Tailwind CSS لتنسيق المظهر -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* إضافة خلفية طبيعية للمزرعة مبهجة وتملأ الشاشة بالكامل */
+        .farm-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), 
+                              url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="farm-bg min-h-screen text-gray-800 font-sans">
 
-export default function HappyFarmGame() {
-  // إضافة حالة (State) للتحكم في شاشة الباسورد
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
-
-  const plots = [
-    { id: 1, crop: '🌽', name: 'ذرة', ready: true },
-    { id: 2, crop: '🥕', name: 'جزر', ready: false },
-    { id: 3, crop: '🍅', name: 'طماطم', ready: true },
-    { id: 4, crop: '🍓', name: 'فراولة', ready: false },
-    { id: 5, crop: '🌾', name: 'قمح', ready: true },
-    { id: 6, crop: '🍉', name: 'بطيخ', ready: false },
-    { id: 7, crop: '🍎', name: 'تفاح', ready: true },
-    { id: 8, crop: '🍌', name: 'موز', ready: false },
-    { id: 9, crop: '🍇', name: 'عنب', ready: true },
-    { id: 10, crop: '🥭', name: 'مانجا', ready: false },
-    { id: 11, crop: '🍍', name: 'أناناس', ready: true },
-    { id: 12, crop: '🥒', name: 'خيار', ready: false },
-    { id: 13, crop: '🥦', name: 'بروكلي', ready: true },
-    { id: 14, crop: '🌶️', name: 'فلفل', ready: false },
-    { id: 15, crop: '🧄', name: 'ثوم', ready: true },
-    { id: 16, crop: '🧅', name: 'بصل', ready: false },
-    { id: 17, crop: '🥔', name: 'بطاطس', ready: true },
-    { id: 18, crop: '🍒', name: 'كرز', ready: false },
-    { id: 19, crop: '🍑', name: 'خوخ', ready: true },
-    { id: 20, crop: '🥝', name: 'كيوي', ready: false },
-  ];
-
-  // دالة تحويل الأرقام العربية لإنجليزي لمجابهة مشاكل الكيبورد بالموبايل
-  const fixNum = (s) => {
-    return s.replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString()).trim();
-  };
-
-  const handleLogin = () => {
-    const cleanPassword = fixNum(passwordInput);
-    if (cleanPassword === '15711') {
-      setIsUnlocked(true);
-    } else {
-      alert('عذراً، كلمة المرور غير صحيحة! ❌');
-    }
-  };
-
-  // 1. إذا كان مقفل.. أظهر شاشة الباسورد
-  if (!isUnlocked) {
-    return (
-      <div className="min-h-screen bg-green-100 flex justify-content items-center justify-center p-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="bg-white rounded-3xl shadow-2xl p-8 text-center max-w-sm w-full border-4 border-green-600">
-          <div className="text-6xl mb-4">🔐</div>
-          <h2 className="text-3xl font-bold text-green-700 mb-2">دخول آمن</h2>
-          <p className="text-gray-500 mb-6">يرجى إدخال كلمة المرور لفتح المزرعة</p>
-          
-          <input
-            type="text"
-            placeholder="PASSWORD"
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            className="w-full padding p-4 mb-4 rounded-2xl border-2 border-gray-200 text-center text-xl font-bold text-green-700 outline-none focus:border-green-500 transition-all"
-          />
-          
-          <button
-            onClick={handleLogin}
-            className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl text-xl font-bold shadow-lg active:scale-95 transition-all"
-          >
-            تأكيد الدخول
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. إذا تم فك القفل.. أظهر اللعبة الأساسية
-  return (
-    <div className="min-h-screen bg-green-100 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-green-700 text-white rounded-3xl p-6 shadow-2xl mb-6 text-center">
-          <h1 className="text-4xl font-bold mb-2">🌱 المزرعة السعيدة</h1>
-          <p className="text-lg">ازرع واحصد وطوّر مزرعتك الذكية</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {plots.map((plot) => (
-            <div
-              key={plot.id}
-              className="bg-white rounded-3xl shadow-xl p-6 hover:scale-105 transition-all duration-300"
+    <!-- 1. شاشة الدخول والباسورد -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 text-center max-w-sm w-full border-4 border-green-600">
+            <div class="text-6xl mb-4">🔐</div>
+            <h2 class="text-3xl font-bold text-green-700 mb-2">دخول آمن</h2>
+            <p class="text-gray-500 mb-6 font-medium">يرجى إدخال كلمة المرور لفتح المزرعة</p>
+            
+            <input
+                type="text"
+                id="passwordInput"
+                placeholder="PASSWORD"
+                class="w-full p-4 mb-4 rounded-2xl border-2 border-gray-200 text-center text-xl font-bold text-green-700 outline-none focus:border-green-500 transition-all shadow-inner"
+            />
+            
+            <button
+                onclick="handleLogin()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl text-xl font-bold shadow-lg active:scale-95 transition-all"
             >
-              <div className="text-center">
-                <div className="text-7xl mb-4">{plot.crop}</div>
-                <h2 className="text-2xl font-bold mb-2">{plot.name}</h2>
-
-                {plot.ready ? (
-                  <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl text-lg font-bold transition-all w-full">
-                    حصاد
-                  </button>
-                ) : (
-                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-2xl text-lg font-bold transition-all w-full">
-                    جاري النمو
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+                تأكيد الدخول
+            </button>
         </div>
-
-        <div className="mt-8 bg-white rounded-3xl shadow-2xl p-6">
-          <h2 className="text-3xl font-bold mb-4 text-center text-green-700">🏠 الحظيرة والمباني</h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            <div className="bg-orange-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐄</div>
-              <p className="font-bold mt-2">بقرة</p>
-            </div>
-
-            <div className="bg-blue-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦁</div>
-              <p className="font-bold mt-2">أسد</p>
-            </div>
-
-            <div className="bg-yellow-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐯</div>
-              <p className="font-bold mt-2">نمر</p>
-            </div>
-
-            <div className="bg-pink-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐆</div>
-              <p className="font-bold mt-2">فهد</p>
-            </div>
-
-            <div className="bg-gray-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐺</div>
-              <p className="font-bold mt-2">ذئب</p>
-            </div>
-
-            <div className="bg-red-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦊</div>
-              <p className="font-bold mt-2">ثعلب</p>
-            </div>
-
-            <div className="bg-green-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐘</div>
-              <p className="font-bold mt-2">فيل</p>
-            </div>
-
-            <div className="bg-purple-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦒</div>
-              <p className="font-bold mt-2">زرافة</p>
-            </div>
-
-            <div className="bg-cyan-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦓</div>
-              <p className="font-bold mt-2">حمار وحشي</p>
-            </div>
-
-            <div className="bg-lime-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦏</div>
-              <p className="font-bold mt-2">وحيد القرن</p>
-            </div>
-
-            <div className="bg-orange-200 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🐅</div>
-              <p className="font-bold mt-2">ببر</p>
-            </div>
-
-            <div className="bg-stone-100 rounded-2xl p-4 text-center">
-              <div className="text-5xl">🦝</div>
-              <p className="font-bold mt-2">راكون</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 text-center">
-          <button className="bg-green-700 hover:bg-green-800 text-white px-10 py-4 rounded-3xl text-2xl font-bold shadow-2xl transition-all">
-            ابدأ اللعب
-          </button>
-        </div>
-      </div>
     </div>
-  );
-}
+
+    <!-- 2. واجهة اللعبة الأساسية (مخفية في البداية) -->
+    <div id="game-screen" class="hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- الهيدر الرئيسي -->
+            <div class="bg-green-700/90 backdrop-blur-sm text-white rounded-3xl p-6 shadow-2xl mb-6 text-center border-2 border-white/20">
+                <h1 className="text-4xl font-bold mb-2" style="font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem;">🌱 المزرعة السعيدة</h1>
+                <p class="text-lg opacity-90">ازرع واحصد وطوّر مزرعتك الذكية</p>
+            </div>
+
+            <!-- شبكة المحاصيل الزراعية -->
+            <div id="plots-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- سيتم إنتاج المحاصيل هنا عبر الجافاسكريبت -->
+            </div>
+
+            <!-- قسم الحظيرة والمباني للحيوانات -->
+            <div class="mt-8 bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 border border-gray-100">
+                <h2 class="text-3xl font-bold mb-6 text-center text-green-700">🏠 الحظيرة والمباني</h2>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div class="bg-orange-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐄</div><p class="font-bold mt-2">بقرة</p></div>
+                    <div class="bg-blue-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦁</div><p class="font-bold mt-2">أسد</p></div>
+                    <div class="bg-yellow-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐯</div><p class="font-bold mt-2">نمر</p></div>
+                    <div class="bg-pink-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐆</div><p class="font-bold mt-2">فهد</p></div>
+                    <div class="bg-gray-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐺</div><p class="font-bold mt-2">ذئب</p></div>
+                    <div class="bg-red-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦊</div><p class="font-bold mt-2">ثعلب</p></div>
+                    <div class="bg-green-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐘</div><p class="font-bold mt-2">فيل</p></div>
+                    <div class="bg-purple-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦒</div><p class="font-bold mt-2">زرافة</p></div>
+                    <div class="bg-cyan-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦓</div><p class="font-bold mt-2">حمار وحشي</p></div>
+                    <div class="bg-lime-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦏</div><p class="font-bold mt-2">وحيد القرن</p></div>
+                    <div class="bg-orange-200/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🐅</div><p class="font-bold mt-2">ببر</p></div>
+                    <div class="bg-stone-100/90 rounded-2xl p-4 text-center shadow-sm"><div class="text-5xl">🦝</div><p class="font-bold mt-2">راكون</p></div>
+                </div>
+            </div>
+
+            <!-- زر ابدأ اللعب المطور -->
+            <div class="mt-8 text-center pb-8">
+                <button class="bg-green-700 hover:bg-green-800 text-white px-12 py-4 rounded-3xl text-2xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95">
+                    ابدأ اللعب المطور 🚀
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // داتا المحاصيل الزراعية المحدثة
+        const plots = [
+            { id: 1, crop: '🌽', name: 'ذرة', ready: true },
+            { id: 2, crop: '🥕', name: 'جزر', ready: false },
+            { id: 3, crop: '🍅', name: 'طماطم', ready: true },
+            { id: 4, crop: '🍓', name: 'فراولة', ready: false },
+            { id: 5, crop: '🌾', name: 'قمح', ready: true },
+            { id: 6, crop: '🍉', name: 'بطيخ', ready: false },
+            { id: 7, crop: '🍎', name: 'تفاح', ready: true },
+            { id: 8, crop: '🍌', name: 'موز', ready: false },
+            { id: 9, crop: '🍇', name: 'عنب', ready: true },
+            { id: 10, crop: '🥭', name: 'مانجا', ready: false },
+            { id: 11, crop: '🍍', name: 'أناناس', ready: true },
+            { id: 12, crop: '🥒', name: 'خيار', ready: false },
+            { id: 13, crop: '🥦', name: 'بروكلي', ready: true },
+            { id: 14, crop: '🌶️', name: 'فلفل', ready: false },
+            { id: 15, crop: '🧄', name: 'ثوم', ready: true },
+            { id: 16, crop: '🧅', name: 'بصل', ready: false },
+            { id: 17, crop: '🥔', name: 'بطاطس', ready: true },
+            { id: 18, crop: '🍒', name: 'كرز', ready: false },
+            { id: 19, crop: '🍑', name: 'خوخ', ready: true },
+            { id: 20, crop: '🥝', name: 'كيوي', ready: false },
+        ];
+
+        // تنظيف الأرقام العربية المدخلة من الموبايل لعدم حدوث خطأ بالباسورد
+        function fixNum(s) {
+            return s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString()).trim();
+        }
+
+        // دالة فحص الباسورد والانتقال لشاشة اللعبة
+        function handleLogin() {
+            const inputVal = document.getElementById('passwordInput').value;
+            const cleanPassword = fixNum(inputVal);
+            
+            if (cleanPassword === '15711') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                renderPlots(); // رندرة المحاصيل
+            } else {
+                alert('عذراً، كلمة المرور غير صحيحة! ❌');
+            }
+        }
+
+        // دالة بناء كروت المحاصيل داخل الـ Grid بشكل ديناميكي ومحمي
+        function renderPlots() {
+            const grid = document.getElementById('plots-grid');
+            grid.innerHTML = '';
+            
+            plots.forEach(plot => {
+                const card = document.createElement('div');
+                card.className = "bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl p-6 hover:scale-105 transition-all duration-300 border border-gray-100 text-center";
+                
+                const btnClass = plot.ready 
+                    ? "bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded-2xl text-lg font-bold transition-all shadow-md" 
+                    : "bg-yellow-500 hover:bg-yellow-600 text-white w-full py-3 rounded-2xl text-lg font-bold transition-all shadow-md";
+                
+                const btnText = plot.ready ? "حصاد 🌾" : "جاري النمو ⏳";
+                
+                card.innerHTML = `
+                    <div class="text-7xl mb-4 select-none">${plot.crop}</div>
+                    <h2 class="text-2xl font-bold mb-3 text-gray-700">${plot.name}</h2>
+                    <button class="${btnClass}" onclick="alert('${plot.name}: ${btnText}')">${btnText}</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
