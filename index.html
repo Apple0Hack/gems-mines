@@ -2,497 +2,422 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🌾 FARM TYCOON: THE REAL GENERATION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>💥 BATTLEZONE MOBILE: THE ARENA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { margin: 0; padding: 0; background: #0f172a; overflow: hidden; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
-        #gameCanvas { display: block; margin: 0 auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); background: #2e7d32; }
-        .hud-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 2px solid #475569; }
+        body { margin: 0; padding: 0; background: #090d16; overflow: hidden; user-select: none; -webkit-user-select: none; font-family: system-ui, sans-serif; color: #fff; touch-action: none; }
+        #gameCanvas { display: block; background: #1e293b; }
+        .hud-overlay { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); border: 1px solid #334155; }
         
-        /* عصا التحكم المتطورة للموبايل */
-        #joystick-container { position: absolute; bottom: 40px; left: 40px; width: 130px; height: 130px; background: rgba(15, 23, 42, 0.6); border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.2); touch-action: none; display: flex; justify-content: center; align-items: center; z-index: 50; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        #joystick-knob { width: 55px; height: 55px; background: linear-gradient(145deg, #64748b, #334155); border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
+        /* أزرار التحكم بالموبايل */
+        #touch-joystick-zone { position: absolute; bottom: 30px; left: 40px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; z-index: 40; display: flex; justify-content: center; align-items: center; }
+        #touch-joystick-knob { width: 50px; height: 50px; background: linear-gradient(145deg, #ef4444, #b91c1c); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.05s linear; }
+        
+        #touch-fire-btn { position: absolute; bottom: 40px; right: 40px; width: 90px; height: 90px; background: linear-gradient(145deg, #dc2626, #991b1b); border: 3px solid #f87171; border-radius: 50%; z-index: 40; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 16px; box-shadow: 0 8px 20px rgba(220,38,38,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.5); active:scale-90; }
         
         .hidden { display: none !important; }
-        .menu-popup { animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body class="w-screen h-screen relative flex items-center justify-center bg-slate-950">
+<body class="w-screen h-screen relative flex items-center justify-center overflow-hidden">
 
-    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-emerald-900 to-slate-950 p-4">
-        <div class="bg-slate-900/95 border-4 border-emerald-500 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl backdrop-blur-md">
-            <div class="text-6xl mb-4 animate-bounce">👨‍🌾</div>
-            <h2 class="text-2xl font-black text-emerald-400 mb-2">محرك المزرعة الحقيقي V2</h2>
-            <p class="text-xs text-slate-400 mb-6">شخصية واقعية، تجربة زراعة مرئية، واقتصاد معقد</p>
-            <input type="text" id="passwordInput" placeholder="PASSWORD" class="w-full p-4 mb-4 rounded-xl bg-slate-800 border-2 border-slate-700 text-center text-xl font-bold text-emerald-400 outline-none focus:border-emerald-500 transition-all"/>
-            <button onclick="handleLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 p-4 rounded-xl text-lg font-black shadow-lg transition-all active:scale-95">تحميل وتدشين المزرعة 🚜</button>
-        </div>
-    </div>
-
-    <div id="hud" class="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none hidden">
-        <div class="flex gap-3 pointer-events-auto">
-            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-amber-500/50 shadow-lg">
-                <span class="text-xl">🪙</span>
-                <span id="hud-gold" class="text-amber-400 font-black text-lg">100</span>
+    <!-- 1. شاشة اختيار الطور والملعب (القائمة الرئيسية) -->
+    <div id="setup-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 p-4 overflow-y-auto">
+        <div class="bg-slate-900/95 border-2 border-red-500 rounded-3xl p-5 max-w-md w-full shadow-2xl backdrop-blur-md">
+            <div class="text-5xl mb-1 text-center animate-pulse">⚔️</div>
+            <h2 class="text-xl font-black text-center text-red-500 mb-4 font-mono tracking-wider">BATTLEZONE MOBILE V3</h2>
+            
+            <div id="security-pass">
+                <input type="text" id="passwordInput" value="15711" placeholder="أدخل رمز تشغيل النظام (15711)" class="w-full p-3 mb-3 rounded-xl bg-slate-800 border border-slate-700 text-center font-bold text-red-400 outline-none focus:border-red-500 text-sm"/>
             </div>
-            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-cyan-500/50 shadow-lg">
-                <span class="text-xl">💎</span>
-                <span id="hud-gems" class="text-cyan-400 font-black text-lg">2</span>
-            </div>
-            <div id="vip-tag" class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-1 border-purple-500/50 bg-purple-950/40 hidden shadow-lg">
-                <span class="text-xs font-black text-purple-400 animate-pulse">👑 VIP نشط (نصف الوقت)</span>
-            </div>
-        </div>
-        
-        <div class="pointer-events-auto">
-            <button onclick="openVipShop()" class="hud-panel px-4 py-2 rounded-2xl text-xs font-black text-white hover:bg-slate-800 transition-all border-purple-500 shadow-md">امتيازات الـ VIP 👑</button>
-        </div>
-    </div>
 
-    <div id="interaction-prompt" class="absolute bottom-28 left-1/2 transform -translate-x-1/2 hud-panel px-6 py-3 rounded-full text-white font-bold text-sm border-emerald-500 shadow-xl hidden pointer-events-none animate-bounce">
-        🚶‍♂️ قف فوق المبنى لإدارته وبدء العمل...
-    </div>
-
-    <canvas id="gameCanvas" class="hidden rounded-2xl border-4 border-slate-800 shadow-2xl"></canvas>
-
-    <div id="joystick-container" class="hidden">
-        <div id="joystick-knob"></div>
-    </div>
-
-    <div id="menu-field" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">🌱 إدارة أحواض الحقل الزراعي</h3>
-                <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
-            </div>
-            <div id="field-status" class="text-xs mb-4 text-slate-400">يمكنك رؤية الزرع وهو ينمو في التربة على الخريطة الآن!</div>
-            <div class="space-y-3">
-                <button onclick="plant('wheat')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-slate-700 transition-all">
-                    <span class="font-bold flex items-center gap-2">🌾 قمح استراتيجي</span>
-                    <span class="text-xs text-amber-400 font-medium">التكلفة: 🪙15 | الوقت: <span class="crop-t-1">6</span>ث</span>
-                </button>
-                <button onclick="plant('gold_potato')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-cyan-500/40 transition-all">
-                    <span class="font-bold text-cyan-400 flex items-center gap-2">🥔 بطاطس ذهبية نادرة</span>
-                    <span class="text-xs text-cyan-400 font-medium">التكلفة: 💎1 | الوقت: <span class="crop-t-2">12</span>ث</span>
-                </button>
-                <button id="harvest-btn" onclick="harvest()" class="w-full bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 p-4 rounded-xl font-black text-center text-slate-950 shadow-lg hidden">🌾 حصاد وجمع المحصول الناضج فورا!</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="menu-factory" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-purple-400 flex items-center gap-2">🏭 خطوط تشغيل المصنع</h3>
-                <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
-            </div>
-            <div id="factory-status" class="text-sm mb-4 text-slate-400">حالة خط المعالجة: متوقف</div>
-            <div class="space-y-3">
-                <div class="p-4 bg-slate-800 rounded-xl border border-slate-700 flex flex-col gap-3">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-sm">🥛 معمل تصنيع الألبان والأجبان</h4>
-                        <span class="text-xs text-cyan-400">الجائزة: 💎 1 جوهرة</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400">المتطلبات القاسية: تشغيل الخط يكلف 3 قمح 🌾 من مخزنك.</p>
-                    <button onclick="startFactory()" class="w-full bg-purple-600 hover:bg-purple-700 text-white p-2.5 rounded-xl text-xs font-bold shadow transition-all">بدء التصنيع والتخمير (<span id="fact-t">16</span>ث)</button>
+            <div id="game-options" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 font-bold block mb-1">🗺️ اختر ساحة المعركة (الملعب):</label>
+                    <select id="map-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold text-xs text-amber-400 outline-none">
+                        <option value="hotel">🏨 الفندق الفاخر (مساحات مفتوحة وغرف واسعة)</option>
+                        <option value="building">🏢 المبنى السكني (ممرات ضيقة وتكتيك تصادم)</option>
+                        <option value="arena">🏜️ الساحة العسكرية المفتوحة (مواجهة طحن مباشرة)</option>
+                    </select>
                 </div>
-                <button id="collect-factory-btn" onclick="collectFactory()" class="w-full bg-gradient-to-r from-cyan-400 to-purple-600 p-4 rounded-xl font-black text-center text-slate-950 shadow-lg hidden">💎 استلام الجواهر الناتجة</button>
-            </div>
-        </div>
-    </div>
 
-    <div id="menu-shop" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-amber-500 flex items-center gap-2">💰 بورصة التاجر والمبيعات</h3>
-                <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
-            </div>
-            <div id="shop-inventory-list" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 font-bold block mb-1">🔥 مستوى ذكاء الكمبيوتر (Bots):</label>
+                    <select id="diff-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold text-xs text-red-400 outline-none">
+                        <option value="medium">💀 متوسط (تحركات عشوائية وتصويب عادي)</option>
+                        <option value="hard">☣️ صعب جداً (مطاردة ذكية وتصويب قاتل ومحترف)</option>
+                    </select>
                 </div>
+
+                <button onclick="startBattle()" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white p-3.5 rounded-xl text-md font-black shadow-lg transition-all transform active:scale-95 mt-2">دخول المعركة الفورية 💥</button>
+            </div>
         </div>
     </div>
 
-    <div id="menu-vip" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-purple-400">👑 ترقية السيادة والمزرعة VIP</h3>
-                <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
+    <!-- 2. واجهة العرض أثناء القتال (HUD للموبايل) -->
+    <div id="hud" class="absolute top-3 left-4 right-4 z-30 flex items-center justify-between pointer-events-none hidden">
+        <div class="flex gap-2 pointer-events-auto">
+            <!-- صحة اللاعب الرئيسي -->
+            <div class="hud-overlay px-3 py-1.5 rounded-xl flex items-center gap-1.5 border-red-500/40">
+                <span class="text-xs font-bold text-red-400">❤️ الصّحة:</span>
+                <span id="player-hp" class="font-black text-md text-red-500">100</span>
             </div>
-            <p class="text-xs text-slate-300 mb-4 leading-relaxed">اقتصاد المزرعة صعب جداً.. شراء قيمة الـ VIP يمنحك رخصة لخفض زمن الزراعة ونمو النباتات، وزمن تشغيل خطوط المصانع إلى **النصف (50% أسرع)** مدى الحياة!</p>
-            <div class="p-4 bg-purple-950/40 border border-purple-500/40 rounded-2xl text-center">
-                <div class="text-xs text-purple-300 mb-1">تكلفة التفعيل الإداري الدائم</div>
-                <div class="text-2xl font-black text-cyan-400 mb-4">💎 5 جواهر نادرة</div>
-                <button id="buy-vip-btn" onclick="buyVipMembership()" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white p-3 rounded-xl font-black shadow-lg transition-all">تحديث إلى رتبة VIP 👑</button>
+            <!-- السلاح الحالي والندرة -->
+            <div class="hud-overlay px-3 py-1.5 rounded-xl flex flex-col border-amber-500/40">
+                <div id="weapon-name" class="font-black text-xs text-amber-400">رشاش عادي [M4]</div>
             </div>
         </div>
     </div>
+
+    <!-- 3. شريط الأسلحة التاتش السفلي (شغال 100% ومهم جداً لتبديل استراتيجية اللعب) -->
+    <div id="weapon-dock" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 hud-overlay px-3 py-2 rounded-2xl border-slate-700 flex gap-2 hidden">
+        <button onclick="switchWeapon('m4')" id="btn-m4" class="bg-amber-500 text-slate-950 text-xs px-3 py-1.5 rounded-xl font-black border border-amber-300">M4 🔫</button>
+        <button onclick="switchWeapon('shotgun')" id="btn-shotgun" class="bg-slate-800 text-orange-400 text-xs px-3 py-1.5 rounded-xl font-black border border-slate-700">شوتجن 💥</button>
+        <button onclick="switchWeapon('sniper')" id="btn-sniper" class="bg-slate-800 text-cyan-400 text-xs px-3 py-1.5 rounded-xl font-black border border-slate-700">قناص نادر 💎</button>
+    </div>
+
+    <!-- الكانفاس الخاص بالمعركة -->
+    <canvas id="gameCanvas" class="hidden shadow-2xl"></canvas>
+
+    <!-- عناصر التحكم باللمس للموبايل -->
+    <div id="touch-joystick-zone" class="hidden">
+        <div id="touch-joystick-knob"></div>
+    </div>
+    <div id="touch-fire-btn" class="hidden">اضرب 🔥</div>
 
     <script>
-        // المتغيرات والموارد الرئيسية للعبة
-        let gold = 100; let gems = 2; let isVip = false;
-        let inventory = { wheat: 0, gold_potato: 0 };
-        let timings = { wheat: 6, gold_potato: 12, factory: 16 };
-
-        // حالات النمو والإنتاج الفعلي للمباني
-        let fieldState = { status: 'empty', crop: null, timer: 0, maxTime: 0, intervalId: null };
-        let factoryState = { status: 'idle', timer: 0, maxTime: 0, intervalId: null };
-
-        // إعدادات محرك الكانفاس للرسم
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth < 800 ? window.innerWidth - 20 : 800;
-        canvas.height = 500;
 
-        // كائن اللاعب (المزارع الواقعي)
-        // اتجاه اللاعب: 0=تحت, 1=فوق, 2=شمال, 3=يمين
-        let player = { x: canvas.width/2, y: canvas.height - 80, radius: 18, speed: 3.5, vx: 0, vy: 0, direction: 0, step: 0 };
+        // الأسلحة التكتيكية المتوازنة للموبايل
+        const weaponsConfig = {
+            m4: { name: 'رشاش M4 [ممتاز]', speed: 10, damage: 10, fireRate: 200, color: '#fbbf24', size: 3, spread: false },
+            shotgun: { name: 'شوتجن مدمر [ملحمي]', speed: 8, damage: 22, fireRate: 700, color: '#f97316', size: 4, spread: true },
+            sniper: { name: 'قناص بلاتيني [نادر جداً] 💎', speed: 20, damage: 60, fireRate: 1300, color: '#06b6d4', size: 5, spread: false }
+        };
 
-        // توزيع المباني والمنشآت الجغرافية في المزرعة بتفاصيل معمارية
-        const structures = [
-            { id: 'field', name: 'الحقل الطيني 🌾', x: 120, y: 150, w: 160, h: 130, color: '#4e342e', roofColor: '#5d4037', emoji: '🌾' },
-            { id: 'factory', name: 'المصنع الحديث 🏭', x: 520, y: 150, w: 160, h: 130, color: '#475569', roofColor: '#334155', emoji: '🏭' },
-            { id: 'shop', name: 'سوق المبيعات 💰', x: 340, y: 60, w: 120, h: 90, color: '#b45309', roofColor: '#78350f', emoji: '💰' }
-        ];
+        let player = { x: 100, y: 200, hp: 100, maxHp: 100, speed: 3.5, r: 15, color: '#3b82f6', weapon: 'm4', lastShot: 0, angle: 0 };
+        let bots = [];
+        let bullets = [];
+        let particles = [];
+        let walls = [];
 
-        let keys = {};
+        let botDifficulty = 'medium';
+        let isGameRunning = false;
+        
+        // متغيرات الـ Joystick اللمسية
+        let joystickActive = false;
+        let joyStartX = 0, joyStartY = 0;
+        let joyMoveX = 0, joyMoveY = 0;
+        let playerVx = 0, playerVy = 0;
+        let isFiring = false;
 
-        function handleLogin() {
-            if (document.getElementById('passwordInput').value.trim() === '15711') {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('hud').classList.remove('hidden');
-                canvas.classList.remove('hidden');
-                if('ontouchstart' in window || navigator.maxTouchPoints > 0) { document.getElementById('joystick-container').classList.remove('hidden'); }
-                
-                initEngine();
-            } else { alert('رمز إدارة المزرعة غير صحيح! ❌'); }
+        // ضبط أبعاد الكانفاس ليملاً شاشة الموبايل تماماً بالعرض
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
 
-        function initEngine() {
-            window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-            window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-            setupJoystick();
-            requestAnimationFrame(gameLoop);
-            updateUI();
+        function startBattle() {
+            const pass = document.getElementById('passwordInput').value.trim();
+            if (pass !== '15711') { alert('رمز إدارة قفل الأنظمة خاطئ! ❌'); return; }
+
+            botDifficulty = document.getElementById('diff-select').value;
+            const selectedMap = document.getElementById('map-select').value;
+
+            // إخفاء شاشة التسجيل وإظهار واجهة الموبايل والكانفاس
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            document.getElementById('weapon-dock').classList.remove('hidden');
+            document.getElementById('touch-joystick-zone').classList.remove('hidden');
+            document.getElementById('touch-fire-btn').classList.remove('hidden');
+            canvas.classList.remove('hidden');
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            buildMapWalls(selectedMap);
+            spawnBots();
+            setupMobileControls();
+
+            isGameRunning = true;
+            requestAnimationFrame(battleLoop);
         }
 
-        function setupJoystick() {
-            const container = document.getElementById('joystick-container');
-            const knob = document.getElementById('joystick-knob');
-            let dragging = false;
+        function buildMapWalls(type) {
+            walls = [];
+            // حدود الخريطة لمنع الهروب خارج حدود شاشة الموبايل
+            walls.push({ x: 0, y: 0, w: canvas.width, h: 15 }, { x: 0, y: canvas.height-15, w: canvas.width, h: 15 },
+                       { x: 0, y: 0, w: 15, h: canvas.height }, { x: canvas.width-15, y: 0, w: 15, h: canvas.height });
 
-            container.addEventListener('touchstart', e => { dragging = true; handleJoy(e); });
-            window.addEventListener('touchmove', e => { if(dragging) handleJoy(e); });
-            window.addEventListener('touchend', () => { dragging = false; knob.style.transform = 'translate(0px, 0px)'; player.vx = 0; player.vy = 0; });
-
-            function handleJoy(e) {
-                const rect = container.getBoundingClientRect();
-                const touch = e.touches[0];
-                const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2;
-                let dx = touch.clientX - cx; let dy = touch.clientY - cy;
-                const dist = Math.sqrt(dx*dx + dy*dy); const maxDist = 45;
-
-                if(dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
-                knob.style.transform = `translate(${dx}px, ${dy}px)`;
-
-                player.vx = (dx / maxDist) * player.speed;
-                player.vy = (dy / maxDist) * player.speed;
+            if (type === 'building') {
+                walls.push({ x: canvas.width*0.25, y: 15, w: 25, h: canvas.height*0.4 }, 
+                           { x: canvas.width*0.25, y: canvas.height*0.65, w: 25, h: canvas.height*0.35 },
+                           { x: canvas.width*0.55, y: canvas.height*0.2, w: canvas.width*0.3, h: 25 },
+                           { x: canvas.width*0.55, y: canvas.height*0.2, w: 25, h: canvas.height*0.5 });
+            } else if (type === 'hotel') {
+                walls.push({ x: canvas.width*0.2, y: canvas.height*0.25, w: 100, h: 100 }, 
+                           { x: canvas.width*0.7, y: canvas.height*0.25, w: 100, h: 100 },
+                           { x: canvas.width*0.4, y: canvas.height*0.6, w: canvas.width*0.2, h: 30 });
+            } else if (type === 'arena') {
+                walls.push({ x: canvas.width*0.2, y: canvas.height*0.3, w: 40, h: 40 }, 
+                           { x: canvas.width*0.7, y: canvas.height*0.3, w: 40, h: 40 },
+                           { x: canvas.width*0.45, y: canvas.height*0.45, w: 50, h: 80 });
             }
         }
 
-        function gameLoop() {
+        function spawnBots() {
+            bots = [
+                { id: 1, x: canvas.width * 0.8, y: canvas.height * 0.2, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.6 : 1.5, r: 14, lastShot: 0, vx: 1, vy: 1 },
+                { id: 2, x: canvas.width * 0.85, y: canvas.height * 0.8, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.6 : 1.5, r: 14, lastShot: 0, vx: -1, vy: 1 },
+                { id: 3, x: canvas.width * 0.5, y: canvas.height * 0.75, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.6 : 1.5, r: 14, lastShot: 0, vx: 1, vy: -1 }
+            ];
+        }
+
+        // إعداد أزرار التاتش والـ Joystick الفعالة بالكامل للموبايل
+        function setupMobileControls() {
+            const joyZone = document.getElementById('touch-joystick-zone');
+            const joyKnob = document.getElementById('touch-joystick-knob');
+            const fireBtn = document.getElementById('touch-fire-btn');
+
+            // 1. تشغيل وعمل الـ Joystick باللمس المتعدد
+            joyZone.addEventListener('touchstart', e => {
+                joystickActive = true;
+                const touch = e.touches[0];
+                const rect = joyZone.getBoundingClientRect();
+                joyStartX = rect.left + rect.width / 2;
+                joyStartY = rect.top + rect.height / 2;
+            });
+
+            window.addEventListener('touchmove', e => {
+                if (!joystickActive) return;
+                let touch = null;
+                for (let i=0; i<e.touches.length; i++) {
+                    if(e.touches[i].target === joyZone || joyZone.contains(e.touches[i].target)) {
+                        touch = e.touches[i]; break;
+                    }
+                }
+                if(!touch) touch = e.touches[0];
+
+                let dx = touch.clientX - joyStartX;
+                let dy = touch.clientY - joyStartY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const maxDist = 40;
+
+                if (dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
+                joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+                // حساب سرعة واتجاه حركة اللاعب والزاوية التلقائية للبندقية
+                playerVx = (dx / maxDist) * player.speed;
+                playerVy = (dy / maxDist) * player.speed;
+                player.angle = Math.atan2(playerVy, playerVx);
+            });
+
+            window.addEventListener('touchend', e => {
+                // التحقق إذا كان اللمس المنتهي يخص الـ Joystick
+                if (e.touches.length === 0 || joystickActive) {
+                    joystickActive = false;
+                    joyKnob.style.transform = 'translate(0px, 0px)';
+                    playerVx = 0; playerVy = 0;
+                }
+            });
+
+            // 2. زر ضرب النار العملاق (اللمس المتواصل للرش المتتالي)
+            fireBtn.addEventListener('touchstart', e => { e.preventDefault(); isFiring = true; });
+            window.addEventListener('touchend', e => { 
+                let fireTouchActive = false;
+                for(let i=0; i<e.touches.length; i++) {
+                    if(e.touches[i].target === fireBtn) fireTouchActive = true;
+                }
+                if(!fireTouchActive) isFiring = false; 
+            });
+        }
+
+        function switchWeapon(type) {
+            player.weapon = type;
+            document.getElementById('weapon-name').innerText = weaponsConfig[type].name;
+            
+            // تحديث ستايل أزرار شريط التبديل السفلي للتأكيد البصري
+            document.querySelectorAll('#weapon-dock button').forEach(b => {
+                b.classList.remove('bg-amber-500', 'text-slate-950');
+                b.classList.add('bg-slate-800', 'text-slate-400');
+            });
+            const activeBtn = document.getElementById(`btn-${type}`);
+            activeBtn.classList.remove('bg-slate-800', 'text-slate-400');
+            activeBtn.classList.add('bg-amber-500', 'text-slate-950');
+        }
+
+        function triggerWeaponShoot(p) {
+            const now = Date.now();
+            const config = weaponsConfig[p.weapon];
+            if (now - p.lastShot < config.fireRate) return;
+
+            p.lastShot = now;
+            if (config.spread) {
+                for (let i = -1; i <= 1; i++) {
+                    bullets.push({ x: p.x, y: p.y, angle: p.angle + (i * 0.18), speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: p });
+                }
+            } else {
+                bullets.push({ x: p.x, y: p.y, angle: p.angle, speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: p });
+            }
+        }
+
+        function battleLoop() {
+            if (!isGameRunning) return;
             updateLogic();
             renderGraphics();
-            requestAnimationFrame(gameLoop);
+            requestAnimationFrame(battleLoop);
         }
 
         function updateLogic() {
-            // تحديث الحركة من الكيبورد إذا لم يكن اللمس فعالاً
-            if (player.vx === 0 && player.vy === 0) {
-                let dx = 0, dy = 0;
-                if (keys['arrowup'] || keys['w']) { dy = -player.speed; player.direction = 1; }
-                else if (keys['arrowdown'] || keys['s']) { dy = player.speed; player.direction = 0; }
-                if (keys['arrowleft'] || keys['a']) { dx = -player.speed; player.direction = 2; }
-                else if (keys['arrowright'] || keys['d']) { dx = player.speed; player.direction = 3; }
-                player.x += dx; player.y += dy;
-                if(dx !== 0 || dy !== 0) { player.step += 0.2; }
-            } else {
-                player.x += player.vx; player.y += player.vy;
-                player.step += 0.2;
-                if(Math.abs(player.vx) > Math.abs(player.vy)) { player.direction = player.vx > 0 ? 3 : 2; }
-                else { player.direction = player.vy > 0 ? 0 : 1; }
-            }
+            // حركة اللاعب بناءً على التاتش الـ Joystick
+            moveEntityWithWallCollision(player, playerVx, playerVy);
 
-            // الحدود لمنع الخروج خارج الكانفاس
-            if(player.x < player.radius) player.x = player.radius;
-            if(player.x > canvas.width - player.radius) player.x = canvas.width - player.radius;
-            if(player.y < player.radius + 40) player.y = player.radius + 40;
-            if(player.y > canvas.height - player.radius) player.y = canvas.height - player.radius;
+            // ميكانيكية الـ Auto-Aim لمساعدة لاعب الموبايل: لو قريب من بوت التصويب ينجذب تلقائياً له
+            let closestBot = null; let minDist = 200;
+            bots.forEach(b => {
+                let d = Math.sqrt((b.x - player.x)**2 + (b.y - player.y)**2);
+                if(d < minDist) { minDist = d; closestBot = b; }
+            });
+            if(closestBot) { player.angle = Math.atan2(closestBot.y - player.y, closestBot.x - player.x); }
 
-            // كشف الاصطدام والاقتراب التلقائي المباشر
-            let nearAny = false;
-            structures.forEach(struct => {
-                let closestX = Math.max(struct.x, Math.min(player.x, struct.x + struct.w));
-                let closestY = Math.max(struct.y, Math.min(player.y, struct.y + struct.h));
-                let distance = Math.sqrt((player.x - closestX)**2 + (player.y - closestY)**2);
+            // معالجة الضغط المستمر لزر ضرب النار
+            if (isFiring) { triggerWeaponShoot(player); }
 
-                if (distance < player.radius + 10) {
-                    nearAny = true;
-                    document.getElementById('interaction-prompt').innerText = `💡 قف هنا لإدارة وتصفح: ${struct.name}`;
-                    document.getElementById('interaction-prompt').classList.remove('hidden');
-                    if (keys[' ']) { openStructureMenu(struct.id); keys[' '] = false; }
+            // معالجة البوتات (ذكاء اصطناعي متوسط وصعب)
+            bots.forEach(bot => {
+                let distToPlayer = Math.sqrt((player.x - bot.x)**2 + (player.y - bot.y)**2);
+                bot.angle = Math.atan2(player.y - bot.y, player.x - bot.x);
+
+                if (botDifficulty === 'hard') {
+                    let bdx = (player.x - bot.x) / distToPlayer * bot.speed;
+                    let bdy = (player.y - bot.y) / distToPlayer * bot.speed;
+                    moveEntityWithWallCollision(bot, bdx, bdy);
+
+                    if (distToPlayer < 280 && Date.now() - bot.lastShot > 550) {
+                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle + (Math.random()*0.08 - 0.04), speed: 7.5, damage: 8, color: '#f43f5e', size: 3, owner: bot });
+                        bot.lastShot = Date.now();
+                    }
+                } else {
+                    if(Math.random() < 0.02) { bot.vx = (Math.random() - 0.5) * bot.speed * 2; bot.vy = (Math.random() - 0.5) * bot.speed * 2; }
+                    moveEntityWithWallCollision(bot, bot.vx, bot.vy);
+
+                    if (distToPlayer < 200 && Math.random() < 0.02 && Date.now() - bot.lastShot > 900) {
+                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle, speed: 6, damage: 6, color: '#f43f5e', size: 3, owner: bot });
+                        bot.lastShot = Date.now();
+                    }
                 }
             });
-            if(!nearAny) document.getElementById('interaction-prompt').classList.add('hidden');
+
+            // حركة الرصاص واصطدامه بالحوائط أو المقاتلين
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.x += Math.cos(b.angle) * b.speed;
+                b.y += Math.sin(b.angle) * b.speed;
+
+                let hitWall = false;
+                for (let w of walls) {
+                    if (b.x > w.x && b.x < w.x + w.w && b.y > w.y && b.y < w.y + w.h) { hitWall = true; break; }
+                }
+                if (hitWall) { bullets.splice(i, 1); continue; }
+
+                // إصابة اللاعب
+                if (b.owner !== player && checkCircleCollision(b.x, b.y, b.size, player.x, player.y, player.r)) {
+                    player.hp -= b.damage; spawnBlood(b.x, b.y); bullets.splice(i, 1);
+                    document.getElementById('player-hp').innerText = Math.max(0, player.hp);
+                    if(player.hp <= 0) gameOver(false);
+                    continue;
+                }
+
+                // إصابة البوتات
+                for (let j = bots.length - 1; j >= 0; j--) {
+                    let bot = bots[j];
+                    if (b.owner === player && checkCircleCollision(b.x, b.y, b.size, bot.x, bot.y, bot.r)) {
+                        bot.hp -= b.damage; spawnBlood(b.x, b.y); bullets.splice(i, 1);
+                        if (bot.hp <= 0) { bots.splice(j, 1); if(bots.length === 0) gameOver(true); }
+                        break;
+                    }
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life--;
+                if(p.life <= 0) particles.splice(i, 1);
+            }
         }
 
-        // ================= محرك الرسم البياني والاحترافي للأشكال والمرئيات =================
+        function moveEntityWithWallCollision(entity, dx, dy) {
+            entity.x += dx;
+            for (let w of walls) {
+                if (entity.x + entity.r > w.x && entity.x - entity.r < w.x + w.w && entity.y + entity.r > w.y && entity.y - entity.r < w.y + w.h) {
+                    entity.x -= dx; break;
+                }
+            }
+            entity.y += dy;
+            for (let w of walls) {
+                if (entity.x + entity.r > w.x && entity.x - entity.r < w.x + w.w && entity.y + entity.r > w.y && entity.y - entity.r < w.y + w.h) {
+                    entity.y -= dy; break;
+                }
+            }
+        }
+
+        function checkCircleCollision(x1, y1, r1, x2, y2, r2) {
+            return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < (r1 + r2);
+        }
+
+        function spawnBlood(x, y) {
+            for(let i=0; i<6; i++) {
+                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 15, color: '#ef4444' });
+            }
+        }
+
         function renderGraphics() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. رسم أرضية النجيل العشبية الطبيعية المتداخلة
-            ctx.fillStyle = '#388e3c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#2e7d32'; 
-            for (let i = 0; i < canvas.width; i += 60) {
-                for (let j = 0; j < canvas.height; j += 60) {
-                    if((i+j)%120===0) ctx.fillRect(i, j, 30, 30);
-                }
-            }
+            // الأرضية التكتيكية
+            ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 2. رسم المباني والحقول مع الأنيميشن البصري الحقيقي لنمو الزرع
-            structures.forEach(struct => {
-                // رسم ظلال المباني
-                ctx.fillStyle = 'rgba(0,0,0,0.15)';
-                ctx.fillRect(struct.x + 10, struct.y + 10, struct.w, struct.h);
+            // رسم الجدران
+            ctx.fillStyle = '#475569'; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+            walls.forEach(w => { ctx.fillRect(w.x, w.y, w.w, w.h); ctx.strokeRect(w.x, w.y, w.w, w.h); });
 
-                if (struct.id === 'field') {
-                    // رسم الحقل الزراعي كأرض طينية غنية
-                    ctx.fillStyle = '#5c4033'; ctx.beginPath(); ctx.roundRect(struct.x, struct.y, struct.w, struct.h, 12); ctx.fill();
-                    ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 4; ctx.stroke();
+            // تأثير جزيئات الدم
+            particles.forEach(p => { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 4, 4); });
 
-                    // رسم 4 أحواض طينية داخل الحقل
-                    ctx.fillStyle = '#4e342e';
-                    let cellW = (struct.w - 30) / 2; let cellH = (struct.h - 30) / 2;
-                    let cells = [
-                        {x: struct.x + 10, y: struct.y + 10}, {x: struct.x + 20 + cellW, y: struct.y + 10},
-                        {x: struct.x + 10, y: struct.y + 20 + cellH}, {x: struct.x + 20 + cellW, y: struct.y + 20 + cellH}
-                    ];
-                    
-                    cells.forEach(c => {
-                        ctx.fillRect(c.x, c.y, cellW, cellH);
-                        // أنيميشن نمو الزرع البصري في الحوض بناء على النسبة الفوقية
-                        if (fieldState.status === 'growing' || fieldState.status === 'ready') {
-                            let pct = fieldState.status === 'ready' ? 1 : (fieldState.timer / fieldState.maxTime);
-                            ctx.textAlign = 'center';
-                            if (pct < 0.4) {
-                                ctx.font = '16px sans-serif'; ctx.fillText('🌱', c.x + cellW/2, c.y + cellH/2 + 6); // نبته صغيرة خضراء أولية
-                            } else if (pct < 0.85) {
-                                ctx.font = '22px sans-serif'; ctx.fillText('🌿', c.x + cellW/2, c.y + cellH/2 + 8); // نبته تكبر متوسطة
-                            } else {
-                                ctx.font = '28px sans-serif'; 
-                                ctx.fillText(fieldState.crop === 'wheat' ? '🌾' : '🥔', c.x + cellW/2, c.y + cellH/2 + 10); // محصول كامل مستوي ذهبي
-                            }
-                        }
-                    });
-
-                } else {
-                    // رسم المصنع أو المتجر بتفاصيل معمارية (جدران وأسطح ثلاثية الأبعاد)
-                    ctx.fillStyle = struct.color; ctx.beginPath(); ctx.roundRect(struct.x, struct.y + 20, struct.w, struct.h - 20, 8); ctx.fill();
-                    // السطح المثلث الاحترافي
-                    ctx.fillStyle = struct.roofColor; ctx.beginPath();
-                    ctx.moveTo(struct.x - 10, struct.y + 20); ctx.lineTo(struct.x + struct.w/2, struct.y - 10); ctx.lineTo(struct.x + struct.w + 10, struct.y + 20); ctx.fill();
-                    // الباب والشبابيك
-                    ctx.fillStyle = '#1e293b'; ctx.fillRect(struct.x + struct.w/2 - 15, struct.y + struct.h - 30, 30, 30); // الباب
-                    ctx.fillStyle = '#bae6fd'; ctx.fillRect(struct.x + 20, struct.y + 40, 20, 20); ctx.fillRect(struct.x + struct.w - 40, struct.y + 40, 20, 20); // شبابيك منورة
-                }
-
-                // الرموز والأسماء فوق المنشآت
-                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center';
-                ctx.fillText(struct.name, struct.x + struct.w/2, struct.y + struct.h + 20);
-                if(struct.id !== 'field') {
-                    ctx.font = '28px sans-serif'; ctx.fillText(struct.emoji, struct.x + struct.w/2, struct.y + struct.h/2 + 10);
-                }
-
-                // عداد التحميل المباشر المدمج أعلى المباني
-                if(struct.id === 'field' && fieldState.status === 'growing') {
-                    drawProgressBar(struct.x, struct.y - 25, struct.w, fieldState.timer, fieldState.maxTime, '#10b981');
-                }
-                if(struct.id === 'factory' && factoryState.status === 'running') {
-                    drawProgressBar(struct.x, struct.y - 25, struct.w, factoryState.timer, factoryState.maxTime, '#a855f7');
-                }
+            // الرصاص
+            bullets.forEach(b => {
+                ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.fill();
             });
 
-            // 3. رسم شخصية المزارع الواقعي (Animated Avatar Builder)
-            ctx.save();
-            ctx.translate(player.x, player.y);
+            // رسم اللاعب والبوتات
+            drawSoldier(player);
+            bots.forEach(bot => { drawSoldier(bot); });
+        }
 
-            // تأثير حركة الرجلين (أنيميشن المشي التناوبي)
-            let legSwing = Math.sin(player.step) * 6;
-            ctx.fillStyle = '#0f172a'; // لون البنطلون
-            if(player.direction === 1 || player.direction === 0) { // حركة عمودية
-                ctx.fillRect(-7, 10 + (player.direction===0?legSwing:-legSwing), 5, 8);
-                ctx.fillRect(2, 10 + (player.direction===0?-legSwing:legSwing), 5, 8);
-            } else { // حركة أفقية
-                ctx.fillRect(-6 + legSwing, 10, 5, 8);
-                ctx.fillRect(1 - legSwing, 10, 5, 8);
-            }
+        function drawSoldier(s) {
+            ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.angle);
 
-            // رسم قميص المزارع وجسمه بالكامل
-            ctx.fillStyle = '#ea580c'; // قميص برتقالي مزارع كلاسيك
-            ctx.beginPath(); ctx.roundRect(-12, -10, 24, 22, 6); ctx.fill();
+            // رسم ماسورة السلاح المجهز الفعلي
+            ctx.fillStyle = '#94a3b8'; ctx.fillRect(10, -3, 16, 6);
+            if(s.weapon === 'sniper') { ctx.fillStyle = '#06b6d4'; ctx.fillRect(10, -2, 24, 4); } // لون مميز للقناص النادر الناري
 
-            // رسم الرأس والوجه والأيدي الملونة
-            ctx.fillStyle = '#ffdbac'; // لون البشرة طبيعي
-            ctx.beginPath(); ctx.arc(0, -16, 8, 0, Math.PI*2); ctx.fill();
-
-            // قبعة القش الاحترافية للمزارع الكلاسيكي 👨‍🌾
-            ctx.fillStyle = '#f59e0b'; // أصفر القش
-            ctx.beginPath(); ctx.ellipse(0, -20, 15, 4, 0, 0, Math.PI*2); ctx.fill(); // حافة القبعة الدائرية
-            ctx.beginPath(); ctx.arc(0, -22, 6, Math.PI, 0); ctx.fill(); // قبة القبعة الفوقية
-
-            // تفاصيل الوجه والعينين تلتف وتدور وتتغير تماماً حسب اتجاه حركة اللاعب الفعلي!
-            ctx.fillStyle = '#000000';
-            if (player.direction === 0) { // ينظر لأسفل
-                ctx.fillRect(-4, -16, 2, 2); ctx.fillRect(2, -16, 2, 2); // العينين للامام
-                ctx.fillStyle = '#e11d48'; ctx.fillRect(-2, -12, 4, 1.5); // الفم الباسم
-            } else if (player.direction === 2) { // ينظر لليسار
-                ctx.fillRect(-6, -16, 2, 2); // عين واحدة تظهر جانبية
-            } else if (player.direction === 3) { // ينظر لليمين
-                ctx.fillRect(4, -16, 2, 2);
-            } // اتجاه 1 هو الأعلى والظهر يظهر فلا نرسم تفاصيل وجه
+            // دائرة الجندي
+            ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(0, 0, s.r, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
 
             ctx.restore();
+
+            // شريط طاقة الحياة HP فوق الرأس
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(s.x - 18, s.y - 22, 36, 4);
+            ctx.fillStyle = '#22c55e'; ctx.fillRect(s.x - 18, s.y - 22, 36 * (s.hp / s.maxHp), 4);
         }
 
-        function drawProgressBar(x, y, w, current, max, color) {
-            ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.roundRect(x, y, w, 8, 4); ctx.fill();
-            let pct = (current / max);
-            ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x, y, w * pct, 8, 4); ctx.fill();
+        function gameOver(isWin) {
+            isGameRunning = false;
+            if(isWin) { alert('🔥 كفو يا وحش! قمت بتصفية كافة البوتات وفرضت سيطرتك العسكرية على الساحة!'); } 
+            else { alert('💀 لقيت حتفك! الكمبيوتر تفوق عليك تكتيكياً بالهجوم المحكم، اعد التجربة.'); }
+            location.reload();
         }
-
-        // ================= الأكواد التشغيلية وإدارة المزارع الصعبة =================
-        function openStructureMenu(id) {
-            closeAllMenus();
-            if(id === 'field') { document.getElementById('menu-field').classList.remove('hidden'); updateFieldMenuUI(); }
-            else if(id === 'factory') { document.getElementById('menu-factory').classList.remove('hidden'); updateFactoryMenuUI(); }
-            else if(id === 'shop') { document.getElementById('menu-shop').classList.remove('hidden'); updateShopMenuUI(); }
-        }
-
-        function closeAllMenus() { document.querySelectorAll('.z-40').forEach(m => { if(m.id !== 'hud') m.classList.add('hidden'); }); }
-        function updateUI() {
-            document.getElementById('hud-gold').innerText = gold; document.getElementById('hud-gems').innerText = gems;
-            if(isVip) document.getElementById('vip-tag').classList.remove('hidden');
-        }
-
-        function updateFieldMenuUI() {
-            const statusText = document.getElementById('field-status'); const harvestBtn = document.getElementById('harvest-btn');
-            document.querySelectorAll('.crop-t-1').forEach(e => e.innerText = isVip ? timings.wheat/2 : timings.wheat);
-            document.querySelectorAll('.crop-t-2').forEach(e => e.innerText = isVip ? timings.gold_potato/2 : timings.gold_potato);
-
-            if(fieldState.status === 'empty') { statusText.innerText = "الحوض فارغ وجاهز لبذر الحبوب الفاخرة بالتربة."; harvestBtn.classList.add('hidden'); }
-            else if(fieldState.status === 'growing') { statusText.innerText = `⏳ الزرع ينمو في الطين حالياً.. متبقي: ${fieldState.maxTime - fieldState.timer} ثانية.`; harvestBtn.classList.add('hidden'); }
-            else if(fieldState.status === 'ready') { statusText.innerText = `🎉 المحصول ناضج تماماً على أرض الخريطة ومرئي بشكل كامل!`; harvestBtn.classList.remove('hidden'); }
-        }
-
-        function plant(type) {
-            if(fieldState.status !== 'empty') { alert("الأحواض مشغولة بالزراعة حالياً!"); return; }
-            let actualTime = isVip ? timings[type] / 2 : timings[type];
-            
-            if(type === 'wheat') {
-                if(gold >= 15) { gold -= 15; startFieldGrowth(type, actualTime); } 
-                else { alert("الذهب غير كافٍ لشراء بذور القمح! 🪙"); }
-            } else if(type === 'gold_potato') {
-                if(gems >= 1) { gems -= 1; startFieldGrowth(type, actualTime); } 
-                else { alert("المحاصيل النادرة الاستثمارية تتطلب جواهر 💎!"); }
-            }
-            updateUI(); updateFieldMenuUI();
-        }
-
-        function startFieldGrowth(type, time) {
-            fieldState.status = 'growing'; fieldState.crop = type; fieldState.timer = 0; fieldState.maxTime = time;
-            fieldState.intervalId = setInterval(() => {
-                fieldState.timer++;
-                if(fieldState.timer >= fieldState.maxTime) { clearInterval(fieldState.intervalId); fieldState.status = 'ready'; }
-                updateFieldMenuUI();
-            }, 1000);
-        }
-
-        function harvest() {
-            if(fieldState.status === 'ready') {
-                inventory[fieldState.crop]++; fieldState.status = 'empty'; fieldState.crop = null;
-                alert("تم المنجل وحصاد المواد لجرار الشحن بنجاح! 📦");
-                updateUI(); updateFieldMenuUI();
-            }
-        }
-
-        function updateFactoryMenuUI() {
-            const statusText = document.getElementById('factory-status'); const collectBtn = document.getElementById('collect-factory-btn');
-            document.getElementById('fact-t').innerText = isVip ? timings.factory/2 : timings.factory;
-
-            if(factoryState.status === 'idle') { statusText.innerText = "خط معالجة الألبان متوقف بانتظار توريد قمح الماشية."; collectBtn.classList.add('hidden'); }
-            else if(factoryState.status === 'running') { statusText.innerText = `🏭 المصنع يعمل بأقصى طاقة.. متبقي: ${factoryState.maxTime - factoryState.timer} ثانية.`; collectBtn.classList.add('hidden'); }
-            else if(factoryState.status === 'ready') { statusText.innerText = "اكتمل خط التصنيع والبلورة السحرية للجواهر!"; collectBtn.classList.remove('hidden'); }
-        }
-
-        function startFactory() {
-            if(factoryState.status !== 'idle') return;
-            if(inventory.wheat < 3) { alert("تحتاج إلى 3 قطع قمح 🌾 لتغذية الماشية وتشغيل خط المصنع السري!"); return; }
-
-            inventory.wheat -= 3;
-            let actualTime = isVip ? timings.factory / 2 : timings.factory;
-            factoryState.status = 'running'; factoryState.timer = 0; factoryState.maxTime = actualTime;
-
-            factoryState.intervalId = setInterval(() => {
-                factoryState.timer++;
-                if(factoryState.timer >= factoryState.maxTime) { clearInterval(factoryState.intervalId); factoryState.status = 'ready'; }
-                updateFactoryMenuUI();
-            }, 1000);
-            updateUI(); updateFactoryMenuUI();
-        }
-
-        function collectFactory() {
-            if(factoryState.status === 'ready') {
-                gems += 1; factoryState.status = 'idle';
-                alert("استلمت 1 جوهرة ثمينة 💎 من عوائد المصنع الكبرى!");
-                updateUI(); updateFactoryMenuUI();
-            }
-        }
-
-        function updateShopMenuUI() {
-            const list = document.getElementById('shop-inventory-list'); list.innerHTML = '';
-            const items = [{ key: 'wheat', name: 'قمح ريفي 🌾', reward: 25 }, { key: 'gold_potato', name: 'بطاطس بلاتينية 🥔', reward: 160 }];
-
-            items.forEach(item => {
-                const count = inventory[item.key]; const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700";
-                div.innerHTML = `
-                    <div><span class="font-bold text-sm">${item.name}</span><p class="text-xs text-slate-400">بالمخزن الحالي: <span class="text-amber-400 font-bold">${count}</span></p></div>
-                    <button onclick="sellToMerchant('${item.key}', ${item.reward})" ${count <= 0 ? 'disabled class="bg-gray-700 text-gray-400 text-xs px-3 py-2 rounded-lg cursor-not-allowed"' : 'class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3 py-2 rounded-lg font-black"'}>بيع [🪙${item.reward}]</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function sellToMerchant(key, price) {
-            if(inventory[key] >= 1) { inventory[key]--; gold += price; updateUI(); updateShopMenuUI(); }
-        }
-
-        function openVipShop() { closeAllMenus(); document.getElementById('menu-vip').classList.remove('hidden'); if(isVip) { document.getElementById('buy-vip-btn').innerText = "👑 العضوية نشطة للأبد"; document.getElementById('buy-vip-btn').disabled = true; } }
-        function buyVipMembership() {
-            if(isVip) return;
-            if(gems >= 5) { gems -= 5; isVip = true; alert("👑 تم تفعيل حزمة الـ VIP بنجاح! تم خفض زمن الإنتاج والنمو للنصف فوراً وللأبد!"); updateUI(); closeAllMenus(); }
-            else { alert("الجواهر غير كافية لتأمين الصفقة العالية! 💎"); }
-        }
-
-        // دعم فتح القوائم عند لمس التلميح على أجهزة الموبايل
-        document.getElementById('interaction-prompt').addEventListener('click', () => {
-            structures.forEach(struct => {
-                let closestX = Math.max(struct.x, Math.min(player.x, struct.x + struct.w));
-                let closestY = Math.max(struct.y, Math.min(player.y, struct.y + struct.h));
-                if (Math.sqrt((player.x - closestX)**2 + (player.y - closestY)**2) < player.radius + 15) { openStructureMenu(struct.id); }
-            });
-        });
     </script>
 </body>
 </html>
