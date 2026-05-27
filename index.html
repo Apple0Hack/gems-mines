@@ -3,153 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌱 لعبة المزرعة السعيدة المطورة</title>
+    <title>🚜 الإمبراطورية الزراعية المتطورة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .farm-bg {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)), 
-                              url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+        .farm-grid-bg {
+            background-color: #2e7d32;
+            background-image: radial-gradient(#388e3c 20%, transparent 20%),
+                              radial-gradient(#388e3c 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
         }
-        .blur-panel {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(8px);
+        .blur-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body class="farm-bg min-h-screen text-gray-800 font-sans">
+<body class="bg-slate-900 text-gray-800 font-sans min-h-screen pb-10">
 
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-6">
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 text-center max-w-sm w-full border-4 border-green-600">
-            <div class="text-6xl mb-4">🔐</div>
-            <h2 class="text-3xl font-bold text-green-700 mb-2">دخول آمن</h2>
-            <p class="text-gray-500 mb-6 font-medium">يرجى إدخال كلمة المرور لفتح المزرعة</p>
-            
-            <input
-                type="text"
-                id="passwordInput"
-                placeholder="PASSWORD"
-                class="w-full p-4 mb-4 rounded-2xl border-2 border-gray-200 text-center text-xl font-bold text-green-700 outline-none focus:border-green-500 transition-all shadow-inner"
-            />
-            
-            <button
-                onclick="handleLogin()"
-                class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl text-xl font-bold shadow-lg active:scale-95 transition-all"
-            >
-                تأكيد الدخول
-            </button>
+    <!-- 1. شاشة الدخول الآمن -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-800 to-emerald-950">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 text-center max-w-sm w-full border-4 border-amber-500">
+            <div class="text-6xl mb-4 animate-bounce">🚜</div>
+            <h2 class="text-3xl font-bold text-green-800 mb-2">إدارة المزرعة</h2>
+            <p class="text-gray-500 mb-6 font-medium">أدخل شيفرة إدارة النظام لفتح الأرض</p>
+            <input type="text" id="passwordInput" placeholder="PASSWORD" class="w-full p-4 mb-4 rounded-2xl border-2 border-gray-200 text-center text-xl font-bold text-green-700 outline-none focus:border-green-600 transition-all shadow-inner"/>
+            <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white p-4 rounded-2xl text-xl font-bold shadow-lg transform active:scale-95 transition-all">تأكيد السيادة الإدارية</button>
         </div>
     </div>
 
-    <div id="game-screen" class="hidden p-4 md:p-6">
-        <div class="max-w-6xl mx-auto">
-            
-            <div class="bg-green-700/95 text-white rounded-3xl p-6 shadow-2xl mb-6 flex flex-col md:flex-row items-center justify-between border-2 border-white/20 gap-4">
-                <div class="text-center md:text-right">
-                    <h1 class="text-3xl font-bold flex items-center gap-2 justify-center md:justify-start">🌱 المزرعة السعيدة</h1>
-                    <p class="text-sm opacity-90 mt-1">اضغط على المربعات الفارغة لتبدأ الزراعة والربح!</p>
+    <!-- 2. الشاشة الرئيسية للعبة -->
+    <div id="game-screen" class="hidden">
+        
+        <!-- لوحة التحكم العلوية والموارد -->
+        <div class="bg-emerald-800 text-white sticky top-0 z-40 shadow-xl border-b-4 border-amber-500 px-4 py-3">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-black flex items-center gap-2">🌾 إمبراطورية المزرعة السعيدة V5</h1>
+                    <p class="text-xs text-green-200">أدر الحقول، ربّ الحيوانات، وشغّل المصانع لإنتاج المنتجات الفاخرة!</p>
                 </div>
-                <div class="bg-yellow-500 text-black px-6 py-3 rounded-2xl text-2xl font-black flex items-center gap-2 shadow-lg border border-yellow-300">
-                    🪙 الذهب: <span id="gold-count">100</span>
+                <!-- الخزنة المالية والمخزن -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="bg-amber-500 text-slate-950 px-4 py-2 rounded-xl text-xl font-black shadow-md border border-amber-300">
+                        🪙 الذهب: <span id="gold-count">250</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- العمود الأيمن: لوحة المخازن والبيع الفوري -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-3xl p-5 shadow-xl border-2 border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">📦 مستودع المنتجات الحالي</h2>
+                    <div id="inventory-list" class="space-y-3">
+                        <!-- يتم رندرة المخزن هنا برمجياً -->
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-5 shadow-xl border-2 border-amber-200">
+                    <h3 class="font-bold text-amber-900 mb-1">💡 استراتيجية الربح الحقيقي:</h3>
+                    <p class="text-xs text-amber-800 leading-relaxed">القمح والبرسيم مواد أساسية. لا تقم ببيعها فوراً! أطعمها للدجاج والأبقار للحصول على البيض والحليب، ثم حوّل الحليب لجبنة والبيض لخبز في المصانع لتضاعف أرباحك 5 مرات!</p>
                 </div>
             </div>
 
-            <div id="plots-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- الأعمدة اليسرى: خريطة المزرعة المنقسمة لأقسام حقيقية -->
+            <div class="lg:col-span-3 space-y-6">
+                
+                <!-- القسم الأول: الحقول الزراعية (الأرض) -->
+                <div class="bg-amber-100/60 rounded-3xl p-6 shadow-xl border-2 border-amber-700/20">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-black text-amber-900 flex items-center gap-2">🌱 الحقول والأراضي الزراعية (<span id="active-plots-count">4</span>/12)</h2>
+                        <button onclick="buyNewPlot()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow transition-all">🚜 شراء قطعة أرض جديدة [🪙150]</button>
+                    </div>
+                    <div id="plots-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <!-- الأراضي تظهر هنا -->
+                    </div>
                 </div>
 
+                <!-- القسم الثاني: حظائر تربية الماشية والدواجن -->
+                <div class="bg-sky-50 rounded-3xl p-6 shadow-xl border-2 border-sky-200">
+                    <h2 class="text-2xl font-black text-sky-900 mb-4 flex items-center gap-2">🐔 حظائر الحيوانات والإنتاج الحيواني</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- حظيرة الدجاج -->
+                        <div class="bg-white rounded-2xl p-4 border border-sky-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">قن الدجاج البياض 🐔</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">يتغذى على: 1 قمح 🌾 | ينتج: 1 بيض 🥚</p>
+                                </div>
+                                <span class="text-3xl">🐔</span>
+                            </div>
+                            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                                <span id="chicken-status" class="text-sm font-medium text-amber-600">جاهز للتغذية</span>
+                                <button onclick="feedAnimals('chicken')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl font-bold text-xs shadow">إطعام وإنتاج (5 ثوانٍ)</button>
+                            </div>
+                        </div>
+                        <!-- حظيرة الأبقار -->
+                        <div class="bg-white rounded-2xl p-4 border border-sky-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">حظيرة الأبقار الحلوبة 🐄</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">تتغذى على: 1 برسيم 🌿 | تنتج: 1 حليب 🥛</p>
+                                </div>
+                                <span class="text-3xl">🐄</span>
+                            </div>
+                            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                                <span id="cow-status" class="text-sm font-medium text-amber-600">جاهزة للتغذية</span>
+                                <button onclick="feedAnimals('cow')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold text-xs shadow">إطعام وحلب (10 ثوانٍ)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم الثالث: المجمعات الصناعية والمعامل -->
+                <div class="bg-purple-50 rounded-3xl p-6 shadow-xl border-2 border-purple-200">
+                    <h2 class="text-2xl font-black text-purple-900 mb-4 flex items-center gap-2">🏭 المجمعات الصناعية وتحويل المنتجات</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- مصنع الجبن -->
+                        <div class="bg-white rounded-2xl p-4 border border-purple-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">معمل صناعة الأجبان 🧀</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">يتطلب: 1 حليب 🥛 | ينتج: 1 جبنة فاخرة 🧀</p>
+                                </div>
+                                <span class="text-3xl">🏭</span>
+                            </div>
+                            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                                <span id="factory-cheese-status" class="text-sm font-medium text-purple-600">المصنع متوقف</span>
+                                <button onclick="runFactory('cheese')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl font-bold text-xs shadow">تشغيل الخط (12 ثانية)</button>
+                            </div>
+                        </div>
+                        <!-- المخبز الآلي -->
+                        <div class="bg-white rounded-2xl p-4 border border-purple-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">المخبز والحلويات الآلية 🍞</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">يتطلب: 1 قمح 🌾 + 1 بيض 🥚 | ينتج: 1 خبز طازج 🍞</p>
+                                </div>
+                                <span class="text-3xl">🥖</span>
+                            </div>
+                            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                                <span id="factory-bakery-status" class="text-sm font-medium text-purple-600">المخبز متوقف</span>
+                                <button onclick="runFactory('bakery')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl font-bold text-xs shadow">خبز المعجنات (15 ثانية)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
+    <!-- مودال بذور الزراعة للمربعات المفتوحة -->
     <div id="seed-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto shadow-2xl border-4 border-green-600">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-green-600">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-2xl font-bold text-green-700">اختر البذور لزراعتها 🌾</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-2xl">✕</button>
+                <h3 class="text-xl font-bold text-green-800">بذر الحقل الزراعي 🚜</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl">✕</button>
             </div>
-            <div id="seeds-list" class="space-y-3">
+            <div class="space-y-3">
+                <!-- قمح -->
+                <div class="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-200">
+                    <div class="flex items-center gap-2">
+                        <span class="text-3xl">🌾</span>
+                        <div>
+                            <h4 class="font-bold text-sm">بذور القمح الاستراتيجي</h4>
+                            <p class="text-xs text-gray-500">النمو: 4ث | تكلفة الزراعة: 🪙5</p>
+                        </div>
+                    </div>
+                    <button onclick="plantCrop('wheat')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">زراعة</button>
                 </div>
+                <!-- برسيم -->
+                <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div class="flex items-center gap-2">
+                        <span class="text-3xl">🌿</span>
+                        <div>
+                            <h4 class="font-bold text-sm">برسيم تسمين المواشي</h4>
+                            <p class="text-xs text-gray-500">النمو: 8ث | تكلفة الزراعة: 🪙10</p>
+                        </div>
+                    </div>
+                    <button onclick="plantCrop('clover')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">زراعة</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // قائمة المحاصيل الزراعية مع أسعارها ووقت نموها وأرباحها
-        const cropsData = [
-            { seed: '🌽', name: 'ذرة', cost: 10, reward: 20, time: 5 },     // تنمو في 5 ثواني
-            { seed: '🥕', name: 'جزر', cost: 20, reward: 45, time: 10 },    // تنمو في 10 ثواني
-            { seed: '🍅', name: 'طماطم', cost: 40, reward: 95, time: 20 },   // تنمو في 20 ثواني
-            { seed: '🍓', name: 'فراولة', cost: 80, reward: 200, time: 40 }, // تنمو في 40 ثواني
-            { seed: '🍉', name: 'بطيخ', cost: 150, reward: 400, time: 60 }   // تنمو في دقيقة
-        ];
+        // إعدادات المحاصيل الأساسية
+        const cropConfigs = {
+            wheat: { seed: '🌾', name: 'قمح', cost: 5, time: 4 },
+            clover: { seed: '🌿', name: 'برسيم', cost: 10, time: 8 }
+        };
 
-        // حالة اللعبة الافتراضية (12 قطعة أرض فارغة)
-        let gold = 100;
+        // أسعار بيع المنتجات النهائية والوسيطة في السوق الحقيقي للعبة
+        const marketRates = {
+            wheat: 8,
+            clover: 15,
+            egg: 25,
+            milk: 40,
+            cheese: 90,
+            bread: 130
+        };
+
+        // حالة المستودع والموارد المتوفرة بالكامل
+        let gold = 250;
+        let inventory = {
+            wheat: 2, // نبدأ ببعض الموارد للمساعدة
+            clover: 1,
+            egg: 0,
+            milk: 0,
+            cheese: 0,
+            bread: 0
+        };
+
+        // إدارة الأراضي المفتوحة والمغلقة
+        let totalPlotsCount = 4; // نبدأ بـ 4 أراضي مفتوحة والباقي مقفل يفتح بالذهب
         let selectedPlotId = null;
         let plots = Array.from({ length: 12 }, (_, i) => ({
             id: i + 1,
-            status: 'empty', // حالتها: empty, growing, ready
+            status: i < 4 ? 'empty' : 'locked', // أول 4 مفتوحين والباقي مقفلين يشتريهم بالذهب
             crop: null,
             timeLeft: 0,
             timerId: null
         }));
 
-        // نظام التحقق من الأرقام لضمان الباسورد
-        function fixNum(s) {
-            return s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString()).trim();
-        }
-
+        // التحقق من الباسورد والدخول للمزرعة
+        function fixNum(s) { return s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d).toString()).trim(); }
+        
         function handleLogin() {
-            const inputVal = document.getElementById('passwordInput').value;
-            if (fixNum(inputVal) === '15711') {
+            if (fixNum(document.getElementById('passwordInput').value) === '15711') {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('game-screen').classList.remove('hidden');
-                updateUI();
+                updateGlobalUI();
                 renderPlots();
             } else {
-                alert('عذراً، كلمة المرور غير صحيحة! ❌');
+                alert('شيفرة الوصول غير صحيحة! ❌');
             }
         }
 
-        // تحديث شاشة عرض الذهب
-        function updateUI() {
+        // تحديث واجهات المخازن، الذهب، والعدادات الشاملة
+        function updateGlobalUI() {
             document.getElementById('gold-count').innerText = gold;
+            document.getElementById('active-plots-count').innerText = totalPlotsCount;
+            
+            const invContainer = document.getElementById('inventory-list');
+            invContainer.innerHTML = '';
+
+            const itemsTranslate = {
+                wheat: { n: 'قمح استراتيجي 🌾', key: 'wheat' },
+                clover: { n: 'برسيم غني 🌿', key: 'clover' },
+                egg: { n: 'بيض طازج 🥚', key: 'egg' },
+                milk: { n: 'حليب كامل الدسم 🥛', key: 'milk' },
+                cheese: { n: 'قوالب جبنة ناضجة 🧀', key: 'cheese' },
+                bread: { n: 'خبز ريفي فاخر 🍞', key: 'bread' }
+            };
+
+            Object.keys(inventory).forEach(key => {
+                const count = inventory[key];
+                const price = marketRates[key];
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200/60";
+                div.innerHTML = `
+                    <div>
+                        <div class="font-bold text-sm text-slate-800">${itemsTranslate[key].n}</div>
+                        <div class="text-xs text-gray-500 font-semibold">المخزون: <span class="text-green-600 text-sm font-bold">${count}</span></div>
+                    </div>
+                    <button onclick="sellItem('${key}')" ${count <= 0 ? 'disabled class="bg-gray-200 text-gray-400 text-xs px-3 py-1.5 rounded-lg font-bold cursor-not-allowed"' : 'class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow-sm"'}>
+                        بيع [🪙${price}]
+                    </button>
+                `;
+                invContainer.innerHTML += div.outerHTML;
+            });
         }
 
-        // رندرة وبناء الأراضي
+        // رندرة وبناء رقع الأرض الزراعية الجغرافية
         function renderPlots() {
             const grid = document.getElementById('plots-grid');
             grid.innerHTML = '';
 
             plots.forEach(plot => {
                 const card = document.createElement('div');
-                card.className = "blur-panel rounded-3xl shadow-xl p-5 border-2 border-dashed border-green-700/30 text-center flex flex-col justify-between min-h-[200px] transition-all hover:scale-102";
+                card.className = "rounded-2xl p-4 text-center flex flex-col justify-between min-h-[140px] transition-all border-2 ";
 
-                if (plot.status === 'empty') {
-                    // أرض فارغة جاهزة للزراعة
+                if (plot.status === 'locked') {
+                    card.className += "bg-slate-800/80 border-slate-700 text-slate-400";
                     card.innerHTML = `
-                        <div class="text-5xl my-auto opacity-40">🟫</div>
-                        <button onclick="openModal(${plot.id})" class="bg-green-600 hover:bg-green-700 text-white w-full py-2.5 rounded-2xl text-md font-bold shadow-md transition-all mt-2">
-                            زراعة 🌱
-                        </button>
+                        <div class="text-3xl my-auto">🔒</div>
+                        <div class="text-xs font-bold">أرض غير مستصلحة</div>
+                    `;
+                } else if (plot.status === 'empty') {
+                    card.className += "bg-amber-50 border-dashed border-amber-700/40 hover:border-amber-500 hover:bg-amber-100/50 cursor-pointer";
+                    card.innerHTML = `
+                        <div class="text-4xl my-auto opacity-50">🟫</div>
+                        <button onclick="openModal(${plot.id})" class="bg-emerald-700 hover:bg-emerald-800 text-white w-full py-1.5 rounded-xl text-xs font-bold shadow">استغلال وزراعة</button>
                     `;
                 } else if (plot.status === 'growing') {
-                    // محصول في مرحلة النمو مع عداد تنازلي
+                    card.className += "bg-green-50 border-green-300";
                     card.innerHTML = `
-                        <div class="text-5xl my-auto animate-pulse">🌱</div>
-                        <div class="font-bold text-gray-700">${plot.crop.name} ينمو...</div>
-                        <div class="bg-yellow-100 text-yellow-700 font-bold py-1.5 px-3 rounded-xl inline-block mt-2 text-sm">
-                            ⏳ متبقي: ${plot.timeLeft} ثانية
-                        </div>
+                        <div class="text-3xl my-auto animate-pulse">🌱</div>
+                        <div class="text-xs font-bold text-gray-700">${plot.crop.name} ينمو...</div>
+                        <div class="bg-amber-500 text-slate-950 font-black py-0.5 px-2 rounded-lg text-[10px] mt-1 inline-block">⏳ ${plot.timeLeft}ث</div>
                     `;
                 } else if (plot.status === 'ready') {
-                    // محصول ناضج جاهز للحصاد وجني الذهب
+                    card.className += "bg-emerald-100 border-emerald-400 animate-pulse shadow-md";
                     card.innerHTML = `
-                        <div class="text-6xl my-auto select-none">${plot.crop.seed}</div>
-                        <div class="font-black text-green-600 text-sm mb-1">جاهز للحصاد!</div>
-                        <button onclick="harvestCrop(${plot.id})" class="bg-yellow-500 hover:bg-yellow-600 text-black w-full py-2.5 rounded-2xl text-lg font-black shadow-md transition-all animate-bounce">
-                            حصاد 🌾 (+${plot.crop.reward})
-                        </button>
+                        <div class="text-4xl my-auto">${plot.crop.seed}</div>
+                        <div class="text-xs font-black text-emerald-800 mb-1">ناضج تماماً!</div>
+                        <button onclick="harvestCrop(${plot.id})" class="bg-amber-500 hover:bg-amber-600 text-slate-950 w-full py-1.5 rounded-xl text-xs font-black shadow">حصاد وحصد المادة</button>
                     `;
                 }
 
@@ -157,58 +319,40 @@
             });
         }
 
-        // فتح مودال اختيار البذور
-        function openModal(plotId) {
-            selectedPlotId = plotId;
-            const modal = document.getElementById('seed-modal');
-            const list = document.getElementById('seeds-list');
-            list.innerHTML = '';
-
-            cropsData.forEach(crop => {
-                const canAfford = gold >= crop.cost;
-                const row = document.createElement('div');
-                row.className = `flex items-center justify-between p-3 rounded-2xl border-2 transition-all ${canAfford ? 'bg-green-50 border-green-200 hover:border-green-500' : 'bg-gray-50 border-gray-200 opacity-60'}`;
-                
-                row.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl">${crop.seed}</span>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-800 text-lg">${crop.name}</p>
-                            <p class="text-xs text-gray-500">الوقت: ${crop.time}ث | الربح: 🪙${crop.reward}</p>
-                        </div>
-                    </div>
-                    <button onclick="${canAfford ? `plantCrop('${crop.name}')` : ''}" 
-                            class="px-4 py-2 rounded-xl text-sm font-bold shadow-sm ${canAfford ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}">
-                        شراء 🪙${crop.cost}
-                    </button>
-                `;
-                list.appendChild(row);
-            });
-
-            modal.classList.remove('hidden');
+        // تفعيل شراء أراضي زراعية جديدة لتكبير رقعة الأرض الاستثمارية
+        function buyNewPlot() {
+            if (gold >= 150 && totalPlotsCount < 12) {
+                gold -= 150;
+                plots[totalPlotsCount].status = 'empty';
+                totalPlotsCount++;
+                updateGlobalUI();
+                renderPlots();
+            } else if (totalPlotsCount >= 12) {
+                alert('لقد قمت باستصلاح كامل مساحة المزرعة القصوى! 🌳');
+            } else {
+                alert('الذهب الحالي غير كافي لاستصلاح أراضي جديدة! 🪙');
+            }
         }
 
-        function closeModal() {
-            document.getElementById('seed-modal').classList.add('hidden');
-        }
+        // فتح وإغلاق مودال البذور
+        function openModal(plotId) { selectedPlotId = plotId; document.getElementById('seed-modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('seed-modal').classList.add('hidden'); }
 
-        // بدء عملية الزراعة وتشغيل العداد الزمني التنازلي
-        function plantCrop(cropName) {
-            const crop = cropsData.find(c => c.name === cropName);
+        // عملية إنبات البذور في التوقيت والصفقة
+        function plantCrop(type) {
+            const crop = cropConfigs[type];
             const plot = plots.find(p => p.id === selectedPlotId);
 
             if (gold >= crop.cost && plot && plot.status === 'empty') {
                 gold -= crop.cost;
-                updateUI();
-
                 plot.status = 'growing';
                 plot.crop = crop;
                 plot.timeLeft = crop.time;
 
                 closeModal();
+                updateGlobalUI();
                 renderPlots();
 
-                // بدء التوقيت الفعلي للقطعة (كل ثانية ينقص العداد)
                 plot.timerId = setInterval(() => {
                     plot.timeLeft--;
                     if (plot.timeLeft <= 0) {
@@ -217,23 +361,89 @@
                     }
                     renderPlots();
                 }, 1000);
+            } else {
+                alert('رصيد الذهب لا يكفي لشراء هذه البذور الفاخرة! 🪙');
             }
         }
 
-        // عملية الحصاد وإضافة الذهب للرصيد
+        // حصاد المواد الأولية ووضعها في المستودعات لتبدأ دورة التصنيع
         function harvestCrop(plotId) {
             const plot = plots.find(p => p.id === plotId);
             if (plot && plot.status === 'ready') {
-                gold += plot.crop.reward;
-                updateUI();
-
-                // إعادة الأرض فارغة من جديد
+                const key = plot.crop.cost === 5 ? 'wheat' : 'clover';
+                inventory[key]++;
+                
                 plot.status = 'empty';
                 plot.crop = null;
                 plot.timeLeft = 0;
                 plot.timerId = null;
 
+                updateGlobalUI();
                 renderPlots();
+            }
+        }
+
+        // خط إطعام الماشية والدواجن (دورة إنتاج حيواني)
+        function feedAnimals(animal) {
+            if (animal === 'chicken') {
+                if (inventory.wheat >= 1) {
+                    inventory.wheat--;
+                    document.getElementById('chicken-status').innerText = '⏳ الدجاج يأكل وينتج البيض...';
+                    updateGlobalUI();
+                    setTimeout(() => {
+                        inventory.egg++;
+                        document.getElementById('chicken-status').innerText = 'جاهز للتغذية';
+                        updateGlobalUI();
+                    }, 5000);
+                } else { alert('مخزون القمح 🌾 فارغ! قم بزراعة وحصاد القمح أولاً لتغذية الدواجن.'); }
+            } else if (animal === 'cow') {
+                if (inventory.clover >= 1) {
+                    inventory.clover--;
+                    document.getElementById('cow-status').innerText = '⏳ يتم تغذية البقر وحلبه...';
+                    updateGlobalUI();
+                    setTimeout(() => {
+                        inventory.milk++;
+                        document.getElementById('cow-status').innerText = 'جاهزة للتغذية';
+                        updateGlobalUI();
+                    }, 10000);
+                } else { alert('مخزون البرسيم 🌿 فارغ! قم بزراعة وحصاد البرسيم لتغذية الأبقار وإنتاج الحليب.'); }
+            }
+        }
+
+        // خط تشغيل المصانع والمعامل (تكرير وتصنيع المواد الخام لمنتجات غالية الثمن)
+        function runFactory(type) {
+            if (type === 'cheese') {
+                if (inventory.milk >= 1) {
+                    inventory.milk--;
+                    document.getElementById('factory-cheese-status').innerText = '🏭 جاري تخمير الحليب وكبس الأجبان...';
+                    updateGlobalUI();
+                    setTimeout(() => {
+                        inventory.cheese++;
+                        document.getElementById('factory-cheese-status').innerText = 'المصنع متوقف';
+                        updateGlobalUI();
+                    }, 12000);
+                } else { alert('لا يوجد حليب 🥛 في المستودع! قم بإطعام الأبقار أولاً لتوليد الحليب.'); }
+            } else if (type === 'bakery') {
+                if (inventory.wheat >= 1 && inventory.egg >= 1) {
+                    inventory.wheat--;
+                    inventory.egg--;
+                    document.getElementById('factory-bakery-status').innerText = '🍞 يتم عجن المكونات وخبز العيش...';
+                    updateGlobalUI();
+                    setTimeout(() => {
+                        inventory.bread++;
+                        document.getElementById('factory-bakery-status').innerText = 'المخبز متوقف';
+                        updateGlobalUI();
+                    }, 15000);
+                } else { alert('المكونات غير كاملة! تحتاج إلى (1 قمح 🌾 + 1 بيض 🥚) لتشغيل خط إنتاج المخبوزات.'); }
+            }
+        }
+
+        // بيع المنتجات في السوق وجني الأرباح الوفيرة بالذهب
+        function sellItem(key) {
+            if (inventory[key] >= 1) {
+                inventory[key]--;
+                gold += marketRates[key];
+                updateGlobalUI();
             }
         }
     </script>
