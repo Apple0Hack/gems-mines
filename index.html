@@ -3,210 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🚜 FARM TYCOON: REAL SIMULATION</title>
+    <title>🌾 FARM TYCOON: THE REAL GENERATION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { margin: 0; padding: 0; background: #111827; overflow: hidden; user-select: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        #gameCanvas { background: #1e3a1e; display: block; box-shadow: inset 0 0 100px rgba(0,0,0,0.8); }
-        .hud-panel { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); border: 2px solid #334155; }
+        body { margin: 0; padding: 0; background: #0f172a; overflow: hidden; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
+        #gameCanvas { display: block; margin: 0 auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); background: #2e7d32; }
+        .hud-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 2px solid #475569; }
         
-        /* تصميم عصا التحكم للموبايل */
-        #joystick-container { position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); touch-action: none; display: flex; justify-content: center; align-items: center; z-index: 50; }
-        #joystick-knob { width: 50px; height: 50px; background: rgba(255,255,255,0.5); border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.05s; }
+        /* عصا التحكم المتطورة للموبايل */
+        #joystick-container { position: absolute; bottom: 40px; left: 40px; width: 130px; height: 130px; background: rgba(15, 23, 42, 0.6); border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.2); touch-action: none; display: flex; justify-content: center; align-items: center; z-index: 50; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        #joystick-knob { width: 55px; height: 55px; background: linear-gradient(145deg, #64748b, #334155); border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
         
         .hidden { display: none !important; }
-        .menu-animate { animation: slideUp 0.2s ease-out; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .menu-popup { animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body class="w-screen h-screen relative flex items-center justify-center">
+<body class="w-screen h-screen relative flex items-center justify-center bg-slate-950">
 
-    <!-- شاشة الدخول -->
-    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
-        <div class="bg-slate-900 border-4 border-amber-500 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div class="text-6xl mb-4">🚜</div>
-            <h2 class="text-2xl font-black text-amber-500 mb-2">محرك المزرعة الواقعي</h2>
-            <p class="text-xs text-slate-400 mb-6">تحرك بالشخصية، اذهب للمباني، واصنع إمبراطوريتك</p>
-            <input type="text" id="passwordInput" placeholder="PASSWORD" class="w-full p-4 mb-4 rounded-xl bg-slate-800 border-2 border-slate-700 text-center text-xl font-bold text-amber-400 outline-none focus:border-amber-500"/>
-            <button onclick="handleLogin()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 p-4 rounded-xl text-lg font-bold shadow-lg transition-all active:scale-95">تشغيل المحرك والتحميل</button>
+    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-emerald-900 to-slate-950 p-4">
+        <div class="bg-slate-900/95 border-4 border-emerald-500 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl backdrop-blur-md">
+            <div class="text-6xl mb-4 animate-bounce">👨‍🌾</div>
+            <h2 class="text-2xl font-black text-emerald-400 mb-2">محرك المزرعة الحقيقي V2</h2>
+            <p class="text-xs text-slate-400 mb-6">شخصية واقعية، تجربة زراعة مرئية، واقتصاد معقد</p>
+            <input type="text" id="passwordInput" placeholder="PASSWORD" class="w-full p-4 mb-4 rounded-xl bg-slate-800 border-2 border-slate-700 text-center text-xl font-bold text-emerald-400 outline-none focus:border-emerald-500 transition-all"/>
+            <button onclick="handleLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 p-4 rounded-xl text-lg font-black shadow-lg transition-all active:scale-95">تحميل وتدشين المزرعة 🚜</button>
         </div>
     </div>
 
-    <!-- واجهة الموارد العلوية (HUD) -->
     <div id="hud" class="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none hidden">
         <div class="flex gap-3 pointer-events-auto">
-            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-amber-500/50">
+            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-amber-500/50 shadow-lg">
                 <span class="text-xl">🪙</span>
                 <span id="hud-gold" class="text-amber-400 font-black text-lg">100</span>
             </div>
-            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-cyan-500/50">
+            <div class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-2 border-cyan-500/50 shadow-lg">
                 <span class="text-xl">💎</span>
                 <span id="hud-gems" class="text-cyan-400 font-black text-lg">2</span>
             </div>
-            <div id="vip-tag" class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-1 border-purple-500/50 bg-purple-950/40 hidden">
-                <span class="text-xs font-black text-purple-400 animate-pulse">👑 VIP نشط</span>
+            <div id="vip-tag" class="hud-panel px-4 py-2 rounded-2xl flex items-center gap-1 border-purple-500/50 bg-purple-950/40 hidden shadow-lg">
+                <span class="text-xs font-black text-purple-400 animate-pulse">👑 VIP نشط (نصف الوقت)</span>
             </div>
         </div>
         
         <div class="pointer-events-auto">
-            <button onclick="openVipShop()" class="hud-panel px-4 py-2 rounded-2xl text-xs font-black text-white hover:bg-slate-800 transition-all border-purple-500">متجر الـ VIP 👑</button>
+            <button onclick="openVipShop()" class="hud-panel px-4 py-2 rounded-2xl text-xs font-black text-white hover:bg-slate-800 transition-all border-purple-500 shadow-md">امتيازات الـ VIP 👑</button>
         </div>
     </div>
 
-    <!-- لوحة إشعار التفاعل السفلي -->
-    <div id="interaction-prompt" class="absolute bottom-24 left-1/2 transform -translate-x-1/2 hud-panel px-6 py-3 rounded-full text-white font-bold text-sm border-emerald-500 shadow-lg hidden pointer-events-none animate-bounce">
-        💡 اقترب أكثر من المبنى للتفاعل...
+    <div id="interaction-prompt" class="absolute bottom-28 left-1/2 transform -translate-x-1/2 hud-panel px-6 py-3 rounded-full text-white font-bold text-sm border-emerald-500 shadow-xl hidden pointer-events-none animate-bounce">
+        🚶‍♂️ قف فوق المبنى لإدارته وبدء العمل...
     </div>
 
-    <!-- شاشة اللعبة الحقيقية (الـ Canvas) -->
-    <canvas id="gameCanvas" class="hidden"></canvas>
+    <canvas id="gameCanvas" class="hidden rounded-2xl border-4 border-slate-800 shadow-2xl"></canvas>
 
-    <!-- عصا التحكم للموبايل -->
     <div id="joystick-container" class="hidden">
         <div id="joystick-knob"></div>
     </div>
 
-    <!-- ================= القوائم التفاعلية المنبثقة عند لمس المباني ================= -->
-    
-    <!-- 1. منيو الحقل الزراعي -->
-    <div id="menu-field" class="absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 max-w-sm w-full text-white menu-animate">
+    <div id="menu-field" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-emerald-400">🌱 الحقل الزراعي الرئيسي</h3>
+                <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">🌱 إدارة أحواض الحقل الزراعي</h3>
                 <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
             </div>
-            <div id="field-status" class="text-sm mb-4 text-slate-300">حالة الحقل: فارغ وجاهز للزراعة</div>
+            <div id="field-status" class="text-xs mb-4 text-slate-400">يمكنك رؤية الزرع وهو ينمو في التربة على الخريطة الآن!</div>
             <div class="space-y-3">
-                <button onclick="plant('wheat')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-slate-700">
-                    <span class="font-bold">🌾 قمح عادي</span>
-                    <span class="text-xs text-amber-400">التكلفة: 🪙10 | الوقت: <span class="crop-t-1">6</span>ث</span>
+                <button onclick="plant('wheat')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-slate-700 transition-all">
+                    <span class="font-bold flex items-center gap-2">🌾 قمح استراتيجي</span>
+                    <span class="text-xs text-amber-400 font-medium">التكلفة: 🪙15 | الوقت: <span class="crop-t-1">6</span>ث</span>
                 </button>
-                <button onclick="plant('gold_potato')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-cyan-500/40">
-                    <span class="font-bold text-cyan-400">🥔 بطاطس ذهبية (نادرة)</span>
-                    <span class="text-xs text-cyan-400">التكلفة: 💎1 | الوقت: <span class="crop-t-2">12</span>ث</span>
+                <button onclick="plant('gold_potato')" class="w-full bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center border border-cyan-500/40 transition-all">
+                    <span class="font-bold text-cyan-400 flex items-center gap-2">🥔 بطاطس ذهبية نادرة</span>
+                    <span class="text-xs text-cyan-400 font-medium">التكلفة: 💎1 | الوقت: <span class="crop-t-2">12</span>ث</span>
                 </button>
-                <button id="harvest-btn" onclick="harvest()" class="w-full bg-emerald-600 hover:bg-emerald-700 p-4 rounded-xl font-black text-center hidden">🌾 حصاد المحصول الجاهز!</button>
+                <button id="harvest-btn" onclick="harvest()" class="w-full bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 p-4 rounded-xl font-black text-center text-slate-950 shadow-lg hidden">🌾 حصاد وجمع المحصول الناضج فورا!</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. منيو الحظيرة والمصنع -->
-    <div id="menu-factory" class="absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-animate">
+    <div id="menu-factory" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-purple-400">🏭 معمل الإنتاج الحيواني والمصنع</h3>
+                <h3 class="text-lg font-bold text-purple-400 flex items-center gap-2">🏭 خطوط تشغيل المصنع</h3>
                 <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
             </div>
-            <div id="factory-status" class="text-sm mb-4 text-slate-300">خط الإنتاج: متوقف</div>
+            <div id="factory-status" class="text-sm mb-4 text-slate-400">حالة خط المعالجة: متوقف</div>
             <div class="space-y-3">
-                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-sm">🥛 إنتاج الجبن الفاخر</h4>
-                        <p class="text-[11px] text-slate-400">يتطلب: 2 قمح 🌾 | الجائزة: 1 جوهرة 💎</p>
+                <div class="p-4 bg-slate-800 rounded-xl border border-slate-700 flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-sm">🥛 معمل تصنيع الألبان والأجبان</h4>
+                        <span class="text-xs text-cyan-400">الجائزة: 💎 1 جوهرة</span>
                     </div>
-                    <button onclick="startFactory()" class="bg-purple-600 hover:bg-purple-700 text-xs px-3 py-2 rounded-lg font-bold">تشغيل (<span id="fact-t">16</span>ث)</button>
+                    <p class="text-[11px] text-slate-400">المتطلبات القاسية: تشغيل الخط يكلف 3 قمح 🌾 من مخزنك.</p>
+                    <button onclick="startFactory()" class="w-full bg-purple-600 hover:bg-purple-700 text-white p-2.5 rounded-xl text-xs font-bold shadow transition-all">بدء التصنيع والتخمير (<span id="fact-t">16</span>ث)</button>
                 </div>
-                <button id="collect-factory-btn" onclick="collectFactory()" class="w-full bg-purple-600 hover:bg-purple-700 p-4 rounded-xl font-black text-center hidden">💎 استلام الجواهر المصنّعة</button>
+                <button id="collect-factory-btn" onclick="collectFactory()" class="w-full bg-gradient-to-r from-cyan-400 to-purple-600 p-4 rounded-xl font-black text-center text-slate-950 shadow-lg hidden">💎 استلام الجواهر الناتجة</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. منيو متجر البيع والشراء -->
-    <div id="menu-shop" class="absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 max-w-sm w-full text-white menu-animate">
+    <div id="menu-shop" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-amber-500">💰 سوق التاجر والمبيعات</h3>
+                <h3 class="text-lg font-bold text-amber-500 flex items-center gap-2">💰 بورصة التاجر والمبيعات</h3>
                 <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
             </div>
-            <div class="text-xs text-slate-400 mb-4">كلما كانت السلع نادرة، كلما ربحت ذهب أكثر لتطوير مزرعتك.</div>
             <div id="shop-inventory-list" class="space-y-3">
-                <!-- يتم التحديث تلقائياً بالمخزن -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- 4. منيو متجر VIP -->
-    <div id="menu-vip" class="absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-animate">
+    <div id="menu-vip" class="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-sm w-full text-white menu-popup">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 class="text-lg font-bold text-purple-400">👑 رتبة ومميزات الـ VIP</h3>
+                <h3 class="text-lg font-bold text-purple-400">👑 ترقية السيادة والمزرعة VIP</h3>
                 <button onclick="closeAllMenus()" class="text-slate-400 hover:text-red-400 font-bold text-xl">✕</button>
             </div>
-            <p class="text-xs text-slate-300 mb-4 leading-relaxed">تفعيل الـ VIP يمنحك صلاحيات خارقة لتسريع الإنتاج. **سيتم تخفيض وقت زراعة المحاصيل ووقت إنتاج المصانع بنسبة 50% كاملة!**</p>
-            <div class="p-4 bg-purple-950/50 border border-purple-500/40 rounded-2xl text-center">
-                <div class="text-xs text-purple-300 mb-2">سعر تفعيل العضوية الدائمة</div>
-                <div class="text-2xl font-black text-cyan-400 mb-4">💎 5 جواهر</div>
-                <button id="buy-vip-btn" onclick="buyVipMembership()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 p-3 rounded-xl font-black shadow-lg">تفعيل الرتبة فوراً 👑</button>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">اقتصاد المزرعة صعب جداً.. شراء قيمة الـ VIP يمنحك رخصة لخفض زمن الزراعة ونمو النباتات، وزمن تشغيل خطوط المصانع إلى **النصف (50% أسرع)** مدى الحياة!</p>
+            <div class="p-4 bg-purple-950/40 border border-purple-500/40 rounded-2xl text-center">
+                <div class="text-xs text-purple-300 mb-1">تكلفة التفعيل الإداري الدائم</div>
+                <div class="text-2xl font-black text-cyan-400 mb-4">💎 5 جواهر نادرة</div>
+                <button id="buy-vip-btn" onclick="buyVipMembership()" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white p-3 rounded-xl font-black shadow-lg transition-all">تحديث إلى رتبة VIP 👑</button>
             </div>
         </div>
     </div>
 
     <script>
-        // إعدادات وبيانات المحرك الأساسية
-        let gold = 100;
-        let gems = 2;
-        let isVip = false;
-
-        // المستودع الحقيقي للاعب
+        // المتغيرات والموارد الرئيسية للعبة
+        let gold = 100; let gems = 2; let isVip = false;
         let inventory = { wheat: 0, gold_potato: 0 };
-
-        // أوقات العمليات الافتراضية (بالثواني)
         let timings = { wheat: 6, gold_potato: 12, factory: 16 };
 
-        // حالات المنشآت والأبنية داخل الخريطة
+        // حالات النمو والإنتاج الفعلي للمباني
         let fieldState = { status: 'empty', crop: null, timer: 0, maxTime: 0, intervalId: null };
         let factoryState = { status: 'idle', timer: 0, maxTime: 0, intervalId: null };
 
-        // كائنات الـ Canvas والرسم
+        // إعدادات محرك الكانفاس للرسم
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth < 800 ? window.innerWidth - 20 : 800;
+        canvas.height = 500;
 
-        // أبعاد أرضية اللعبة الافتراضية
-        canvas.width = 800;
-        canvas.height = 600;
+        // كائن اللاعب (المزارع الواقعي)
+        // اتجاه اللاعب: 0=تحت, 1=فوق, 2=شمال, 3=يمين
+        let player = { x: canvas.width/2, y: canvas.height - 80, radius: 18, speed: 3.5, vx: 0, vy: 0, direction: 0, step: 0 };
 
-        // كائن الشخصية (اللاعب) وموقعه وحجمه وسرعته
-        let player = { x: 400, y: 450, radius: 15, speed: 4, vx: 0, vy: 0 };
-
-        // تعريف المباني والمنشآت الجغرافية في الخريطة ومحيط لمسها
+        // توزيع المباني والمنشآت الجغرافية في المزرعة بتفاصيل معمارية
         const structures = [
-            { id: 'field', name: 'الحقل الزراعي 🌾', x: 200, y: 200, w: 120, h: 100, color: '#3e2723', emoji: '🌾' },
-            { id: 'factory', name: 'المصنع والمزرعة 🏭', x: 600, y: 200, w: 140, h: 100, color: '#475569', emoji: '🏭' },
-            { id: 'shop', name: 'متجر التاجر 💰', x: 400, y: 120, w: 100, h: 80, color: '#b45309', emoji: '💰' }
+            { id: 'field', name: 'الحقل الطيني 🌾', x: 120, y: 150, w: 160, h: 130, color: '#4e342e', roofColor: '#5d4037', emoji: '🌾' },
+            { id: 'factory', name: 'المصنع الحديث 🏭', x: 520, y: 150, w: 160, h: 130, color: '#475569', roofColor: '#334155', emoji: '🏭' },
+            { id: 'shop', name: 'سوق المبيعات 💰', x: 340, y: 60, w: 120, h: 90, color: '#b45309', roofColor: '#78350f', emoji: '💰' }
         ];
 
-        // تتبع الأزرار المضغوطة على الكيبورد
         let keys = {};
 
-        // نظام التحقق والدخول للمحرك
         function handleLogin() {
-            const pass = document.getElementById('passwordInput').value.trim();
-            if (pass === "15711") {
+            if (document.getElementById('passwordInput').value.trim() === '15711') {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('hud').classList.remove('hidden');
                 canvas.classList.remove('hidden');
-                if('ontouchstart' in window) { document.getElementById('joystick-container').classList.remove('hidden'); }
+                if('ontouchstart' in window || navigator.maxTouchPoints > 0) { document.getElementById('joystick-container').classList.remove('hidden'); }
                 
                 initEngine();
-            } else {
-                alert("رمز الوصول للمحرك خاطئ! ❌");
-            }
+            } else { alert('رمز إدارة المزرعة غير صحيح! ❌'); }
         }
 
         function initEngine() {
-            // تفعيل مستمعي الكيبورد
             window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
             window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-
-            // تشغيل الـ Joystick للموبايل واللمس
             setupJoystick();
-
-            // بدء حلقة التحديث والرسم اللانهائية للمحرك (Game Loop)
             requestAnimationFrame(gameLoop);
             updateUI();
         }
 
-        // إعدادات عصا التحكم الافتراضية
         function setupJoystick() {
             const container = document.getElementById('joystick-container');
             const knob = document.getElementById('joystick-knob');
@@ -219,12 +189,9 @@
             function handleJoy(e) {
                 const rect = container.getBoundingClientRect();
                 const touch = e.touches[0];
-                const cx = rect.left + rect.width/2;
-                const cy = rect.top + rect.height/2;
-                let dx = touch.clientX - cx;
-                let dy = touch.clientY - cy;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                const maxDist = 40;
+                const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2;
+                let dx = touch.clientX - cx; let dy = touch.clientY - cy;
+                const dist = Math.sqrt(dx*dx + dy*dy); const maxDist = 45;
 
                 if(dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
                 knob.style.transform = `translate(${dx}px, ${dy}px)`;
@@ -234,7 +201,6 @@
             }
         }
 
-        // الحلقة الأساسية لتحديث الحركة والرسم (60 إطار في الثانية)
         function gameLoop() {
             updateLogic();
             renderGraphics();
@@ -242,306 +208,289 @@
         }
 
         function updateLogic() {
-            // حركة الكيبورد إذا لم يتم استخدام الجويستيك
+            // تحديث الحركة من الكيبورد إذا لم يكن اللمس فعالاً
             if (player.vx === 0 && player.vy === 0) {
                 let dx = 0, dy = 0;
-                if (keys['arrowup'] || keys['w']) dy = -player.speed;
-                if (keys['arrowdown'] || keys['s']) dy = player.speed;
-                if (keys['arrowleft'] || keys['a']) dx = -player.speed;
-                if (keys['arrowright'] || keys['d']) dx = player.speed;
+                if (keys['arrowup'] || keys['w']) { dy = -player.speed; player.direction = 1; }
+                else if (keys['arrowdown'] || keys['s']) { dy = player.speed; player.direction = 0; }
+                if (keys['arrowleft'] || keys['a']) { dx = -player.speed; player.direction = 2; }
+                else if (keys['arrowright'] || keys['d']) { dx = player.speed; player.direction = 3; }
                 player.x += dx; player.y += dy;
+                if(dx !== 0 || dy !== 0) { player.step += 0.2; }
             } else {
                 player.x += player.vx; player.y += player.vy;
+                player.step += 0.2;
+                if(Math.abs(player.vx) > Math.abs(player.vy)) { player.direction = player.vx > 0 ? 3 : 2; }
+                else { player.direction = player.vy > 0 ? 0 : 1; }
             }
 
-            // منع اللاعب من الخروج عن حدود الأرض الخضراء للمزرعة
+            // الحدود لمنع الخروج خارج الكانفاس
             if(player.x < player.radius) player.x = player.radius;
             if(player.x > canvas.width - player.radius) player.x = canvas.width - player.radius;
-            if(player.y < player.radius) player.y = player.radius;
+            if(player.y < player.radius + 40) player.y = player.radius + 40;
             if(player.y > canvas.height - player.radius) player.y = canvas.height - player.radius;
 
-            // فحص التصادم والاقتراب من المنشآت لفتح القوائم التفاعلية بذكاء
+            // كشف الاصطدام والاقتراب التلقائي المباشر
             let nearAny = false;
             structures.forEach(struct => {
-                // حساب المسافة بين مركز اللاعب والمبنى
                 let closestX = Math.max(struct.x, Math.min(player.x, struct.x + struct.w));
                 let closestY = Math.max(struct.y, Math.min(player.y, struct.y + struct.h));
-                let distX = player.x - closestX;
-                let distY = player.y - closestY;
-                let distance = Math.sqrt(distX*distX + distY*distY);
+                let distance = Math.sqrt((player.x - closestX)**2 + (player.y - closestY)**2);
 
-                if (distance < player.radius + 15) {
+                if (distance < player.radius + 10) {
                     nearAny = true;
-                    document.getElementById('interaction-prompt').innerText = `💡 اضغط مسطرة (Space) أو اضغط هنا لفتح: ${struct.name}`;
+                    document.getElementById('interaction-prompt').innerText = `💡 قف هنا لإدارة وتصفح: ${struct.name}`;
                     document.getElementById('interaction-prompt').classList.remove('hidden');
-                    
-                    // فتح القائمة عند ضغط المسطرة
                     if (keys[' ']) { openStructureMenu(struct.id); keys[' '] = false; }
                 }
             });
-
-            if(!nearAny) { document.getElementById('interaction-prompt').classList.add('hidden'); }
+            if(!nearAny) document.getElementById('interaction-prompt').classList.add('hidden');
         }
 
-        // رسم مكونات اللعبة بالكامل جرافيكياً داخل الـ Canvas
+        // ================= محرك الرسم البياني والاحترافي للأشكال والمرئيات =================
         function renderGraphics() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. رسم أرضية النجيل العشبية
-            ctx.fillStyle = '#1e3a1e'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#274e27'; ctx.lineWidth = 2;
-            for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
-            for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
+            // 1. رسم أرضية النجيل العشبية الطبيعية المتداخلة
+            ctx.fillStyle = '#388e3c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#2e7d32'; 
+            for (let i = 0; i < canvas.width; i += 60) {
+                for (let j = 0; j < canvas.height; j += 60) {
+                    if((i+j)%120===0) ctx.fillRect(i, j, 30, 30);
+                }
+            }
 
-            // 2. رسم المنشآت والمباني الحقيقية
+            // 2. رسم المباني والحقول مع الأنيميشن البصري الحقيقي لنمو الزرع
             structures.forEach(struct => {
-                ctx.fillStyle = struct.color;
-                ctx.beginPath();
-                ctx.roundRect(struct.x, struct.y, struct.w, struct.h, 16);
-                ctx.fill();
-                ctx.strokeStyle = '#4d7c0f'; ctx.lineWidth = 3; ctx.stroke();
+                // رسم ظلال المباني
+                ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                ctx.fillRect(struct.x + 10, struct.y + 10, struct.w, struct.h);
 
-                // رسم الأشكال التوضيحية والعدادات للمباني
-                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+                if (struct.id === 'field') {
+                    // رسم الحقل الزراعي كأرض طينية غنية
+                    ctx.fillStyle = '#5c4033'; ctx.beginPath(); ctx.roundRect(struct.x, struct.y, struct.w, struct.h, 12); ctx.fill();
+                    ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 4; ctx.stroke();
+
+                    // رسم 4 أحواض طينية داخل الحقل
+                    ctx.fillStyle = '#4e342e';
+                    let cellW = (struct.w - 30) / 2; let cellH = (struct.h - 30) / 2;
+                    let cells = [
+                        {x: struct.x + 10, y: struct.y + 10}, {x: struct.x + 20 + cellW, y: struct.y + 10},
+                        {x: struct.x + 10, y: struct.y + 20 + cellH}, {x: struct.x + 20 + cellW, y: struct.y + 20 + cellH}
+                    ];
+                    
+                    cells.forEach(c => {
+                        ctx.fillRect(c.x, c.y, cellW, cellH);
+                        // أنيميشن نمو الزرع البصري في الحوض بناء على النسبة الفوقية
+                        if (fieldState.status === 'growing' || fieldState.status === 'ready') {
+                            let pct = fieldState.status === 'ready' ? 1 : (fieldState.timer / fieldState.maxTime);
+                            ctx.textAlign = 'center';
+                            if (pct < 0.4) {
+                                ctx.font = '16px sans-serif'; ctx.fillText('🌱', c.x + cellW/2, c.y + cellH/2 + 6); // نبته صغيرة خضراء أولية
+                            } else if (pct < 0.85) {
+                                ctx.font = '22px sans-serif'; ctx.fillText('🌿', c.x + cellW/2, c.y + cellH/2 + 8); // نبته تكبر متوسطة
+                            } else {
+                                ctx.font = '28px sans-serif'; 
+                                ctx.fillText(fieldState.crop === 'wheat' ? '🌾' : '🥔', c.x + cellW/2, c.y + cellH/2 + 10); // محصول كامل مستوي ذهبي
+                            }
+                        }
+                    });
+
+                } else {
+                    // رسم المصنع أو المتجر بتفاصيل معمارية (جدران وأسطح ثلاثية الأبعاد)
+                    ctx.fillStyle = struct.color; ctx.beginPath(); ctx.roundRect(struct.x, struct.y + 20, struct.w, struct.h - 20, 8); ctx.fill();
+                    // السطح المثلث الاحترافي
+                    ctx.fillStyle = struct.roofColor; ctx.beginPath();
+                    ctx.moveTo(struct.x - 10, struct.y + 20); ctx.lineTo(struct.x + struct.w/2, struct.y - 10); ctx.lineTo(struct.x + struct.w + 10, struct.y + 20); ctx.fill();
+                    // الباب والشبابيك
+                    ctx.fillStyle = '#1e293b'; ctx.fillRect(struct.x + struct.w/2 - 15, struct.y + struct.h - 30, 30, 30); // الباب
+                    ctx.fillStyle = '#bae6fd'; ctx.fillRect(struct.x + 20, struct.y + 40, 20, 20); ctx.fillRect(struct.x + struct.w - 40, struct.y + 40, 20, 20); // شبابيك منورة
+                }
+
+                // الرموز والأسماء فوق المنشآت
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center';
                 ctx.fillText(struct.name, struct.x + struct.w/2, struct.y + struct.h + 20);
-                ctx.font = '32px sans-serif';
-                ctx.fillText(struct.emoji, struct.x + struct.w/2, struct.y + struct.h/2 + 10);
+                if(struct.id !== 'field') {
+                    ctx.font = '28px sans-serif'; ctx.fillText(struct.emoji, struct.x + struct.w/2, struct.y + struct.h/2 + 10);
+                }
 
-                // رسم أشرطة التحميل والنمو التنازلي فوق المباني مباشرة بشكل واقعي جداً
+                // عداد التحميل المباشر المدمج أعلى المباني
                 if(struct.id === 'field' && fieldState.status === 'growing') {
-                    drawProgressBar(struct.x, struct.y - 15, struct.w, fieldState.timer, fieldState.maxTime, '#10b981');
+                    drawProgressBar(struct.x, struct.y - 25, struct.w, fieldState.timer, fieldState.maxTime, '#10b981');
                 }
                 if(struct.id === 'factory' && factoryState.status === 'running') {
-                    drawProgressBar(struct.x, struct.y - 15, struct.w, factoryState.timer, factoryState.maxTime, '#a855f7');
+                    drawProgressBar(struct.x, struct.y - 25, struct.w, factoryState.timer, factoryState.maxTime, '#a855f7');
                 }
             });
 
-            // 3. رسم شخصية المزارع (اللاعب الافتراضي) متحرك
-            ctx.fillStyle = '#bc13fe'; ctx.beginPath();
-            ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
-            // وجه الشخصية لمعرفة الاتجاه
-            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(player.x, player.y - 4, 3, 0, Math.PI*2); ctx.fill();
+            // 3. رسم شخصية المزارع الواقعي (Animated Avatar Builder)
+            ctx.save();
+            ctx.translate(player.x, player.y);
+
+            // تأثير حركة الرجلين (أنيميشن المشي التناوبي)
+            let legSwing = Math.sin(player.step) * 6;
+            ctx.fillStyle = '#0f172a'; // لون البنطلون
+            if(player.direction === 1 || player.direction === 0) { // حركة عمودية
+                ctx.fillRect(-7, 10 + (player.direction===0?legSwing:-legSwing), 5, 8);
+                ctx.fillRect(2, 10 + (player.direction===0?-legSwing:legSwing), 5, 8);
+            } else { // حركة أفقية
+                ctx.fillRect(-6 + legSwing, 10, 5, 8);
+                ctx.fillRect(1 - legSwing, 10, 5, 8);
+            }
+
+            // رسم قميص المزارع وجسمه بالكامل
+            ctx.fillStyle = '#ea580c'; // قميص برتقالي مزارع كلاسيك
+            ctx.beginPath(); ctx.roundRect(-12, -10, 24, 22, 6); ctx.fill();
+
+            // رسم الرأس والوجه والأيدي الملونة
+            ctx.fillStyle = '#ffdbac'; // لون البشرة طبيعي
+            ctx.beginPath(); ctx.arc(0, -16, 8, 0, Math.PI*2); ctx.fill();
+
+            // قبعة القش الاحترافية للمزارع الكلاسيكي 👨‍🌾
+            ctx.fillStyle = '#f59e0b'; // أصفر القش
+            ctx.beginPath(); ctx.ellipse(0, -20, 15, 4, 0, 0, Math.PI*2); ctx.fill(); // حافة القبعة الدائرية
+            ctx.beginPath(); ctx.arc(0, -22, 6, Math.PI, 0); ctx.fill(); // قبة القبعة الفوقية
+
+            // تفاصيل الوجه والعينين تلتف وتدور وتتغير تماماً حسب اتجاه حركة اللاعب الفعلي!
+            ctx.fillStyle = '#000000';
+            if (player.direction === 0) { // ينظر لأسفل
+                ctx.fillRect(-4, -16, 2, 2); ctx.fillRect(2, -16, 2, 2); // العينين للامام
+                ctx.fillStyle = '#e11d48'; ctx.fillRect(-2, -12, 4, 1.5); // الفم الباسم
+            } else if (player.direction === 2) { // ينظر لليسار
+                ctx.fillRect(-6, -16, 2, 2); // عين واحدة تظهر جانبية
+            } else if (player.direction === 3) { // ينظر لليمين
+                ctx.fillRect(4, -16, 2, 2);
+            } // اتجاه 1 هو الأعلى والظهر يظهر فلا نرسم تفاصيل وجه
+
+            ctx.restore();
         }
 
         function drawProgressBar(x, y, w, current, max, color) {
-            ctx.fillStyle = '#334155'; ctx.fillRect(x, y, w, 8);
+            ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.roundRect(x, y, w, 8, 4); ctx.fill();
             let pct = (current / max);
-            ctx.fillStyle = color; ctx.fillRect(x, y, w * pct, 8);
+            ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x, y, w * pct, 8, 4); ctx.fill();
         }
 
-        // فتح القوائم عند الاقتراب واللمس لقطع الأراضي والمصانع
+        // ================= الأكواد التشغيلية وإدارة المزارع الصعبة =================
         function openStructureMenu(id) {
             closeAllMenus();
-            if(id === 'field') {
-                document.getElementById('menu-field').classList.remove('hidden');
-                updateFieldMenuUI();
-            } else if(id === 'factory') {
-                document.getElementById('menu-factory').classList.remove('hidden');
-                updateFactoryMenuUI();
-            } else if(id === 'shop') {
-                document.getElementById('menu-shop').classList.remove('hidden');
-                updateShopMenuUI();
-            }
+            if(id === 'field') { document.getElementById('menu-field').classList.remove('hidden'); updateFieldMenuUI(); }
+            else if(id === 'factory') { document.getElementById('menu-factory').classList.remove('hidden'); updateFactoryMenuUI(); }
+            else if(id === 'shop') { document.getElementById('menu-shop').classList.remove('hidden'); updateShopMenuUI(); }
         }
 
-        function closeAllMenus() {
-            document.querySelectorAll('.z-40').forEach(m => { if(m.id !== 'hud') m.classList.add('hidden'); });
-        }
-
+        function closeAllMenus() { document.querySelectorAll('.z-40').forEach(m => { if(m.id !== 'hud') m.classList.add('hidden'); }); }
         function updateUI() {
-            document.getElementById('hud-gold').innerText = gold;
-            document.getElementById('hud-gems').innerText = gems;
-            if(isVip) { document.getElementById('vip-tag').classList.remove('hidden'); }
+            document.getElementById('hud-gold').innerText = gold; document.getElementById('hud-gems').innerText = gems;
+            if(isVip) document.getElementById('vip-tag').classList.remove('hidden');
         }
 
-        // ================= الأكواد الاستراتيجية والإنتاجية للمزرعة =================
-        
         function updateFieldMenuUI() {
-            const statusText = document.getElementById('field-status');
-            const harvestBtn = document.getElementById('harvest-btn');
-            
-            // تحديث نصوص الوقت في لوحة العرض بناءً على تفعيل الـ VIP
+            const statusText = document.getElementById('field-status'); const harvestBtn = document.getElementById('harvest-btn');
             document.querySelectorAll('.crop-t-1').forEach(e => e.innerText = isVip ? timings.wheat/2 : timings.wheat);
             document.querySelectorAll('.crop-t-2').forEach(e => e.innerText = isVip ? timings.gold_potato/2 : timings.gold_potato);
 
-            if(fieldState.status === 'empty') {
-                statusText.innerText = "حالة الحقل: 🟫 أرض خالية وجاهزة لبذر الحبوب.";
-                harvestBtn.classList.add('hidden');
-            } else if(fieldState.status === 'growing') {
-                statusText.innerText = `⏳ جاري الإنبات والنمو برعاية كاملة... متبقي: ${fieldState.maxTime - fieldState.timer} ثانية.`;
-                harvestBtn.classList.add('hidden');
-            } else if(fieldState.status === 'ready') {
-                statusText.innerText = `🌾 المحصول ناضج بالكامل (${fieldState.crop === 'wheat' ? 'قمح استراتيجي' : 'بطاطس ذهبية نادرة'})!`;
-                harvestBtn.classList.remove('hidden');
-            }
+            if(fieldState.status === 'empty') { statusText.innerText = "الحوض فارغ وجاهز لبذر الحبوب الفاخرة بالتربة."; harvestBtn.classList.add('hidden'); }
+            else if(fieldState.status === 'growing') { statusText.innerText = `⏳ الزرع ينمو في الطين حالياً.. متبقي: ${fieldState.maxTime - fieldState.timer} ثانية.`; harvestBtn.classList.add('hidden'); }
+            else if(fieldState.status === 'ready') { statusText.innerText = `🎉 المحصول ناضج تماماً على أرض الخريطة ومرئي بشكل كامل!`; harvestBtn.classList.remove('hidden'); }
         }
 
         function plant(type) {
-            if(fieldState.status !== 'empty') { alert("الحقل مشغول بمحاصيل أخرى حالياً!"); return; }
-            
+            if(fieldState.status !== 'empty') { alert("الأحواض مشغولة بالزراعة حالياً!"); return; }
             let actualTime = isVip ? timings[type] / 2 : timings[type];
             
             if(type === 'wheat') {
-                if(gold >= 10) { gold -= 10; startFieldGrowth(type, actualTime); } 
+                if(gold >= 15) { gold -= 15; startFieldGrowth(type, actualTime); } 
                 else { alert("الذهب غير كافٍ لشراء بذور القمح! 🪙"); }
             } else if(type === 'gold_potato') {
                 if(gems >= 1) { gems -= 1; startFieldGrowth(type, actualTime); } 
-                else { alert("المحاصيل النادرة تتطلب جواهر 💎! لست قادراً على شرائها."); }
+                else { alert("المحاصيل النادرة الاستثمارية تتطلب جواهر 💎!"); }
             }
-            updateUI();
-            updateFieldMenuUI();
+            updateUI(); updateFieldMenuUI();
         }
 
         function startFieldGrowth(type, time) {
-            fieldState.status = 'growing';
-            fieldState.crop = type;
-            fieldState.timer = 0;
-            fieldState.maxTime = time;
-
+            fieldState.status = 'growing'; fieldState.crop = type; fieldState.timer = 0; fieldState.maxTime = time;
             fieldState.intervalId = setInterval(() => {
                 fieldState.timer++;
-                if(fieldState.timer >= fieldState.maxTime) {
-                    clearInterval(fieldState.intervalId);
-                    fieldState.status = 'ready';
-                }
+                if(fieldState.timer >= fieldState.maxTime) { clearInterval(fieldState.intervalId); fieldState.status = 'ready'; }
                 updateFieldMenuUI();
             }, 1000);
         }
 
         function harvest() {
             if(fieldState.status === 'ready') {
-                inventory[fieldState.crop]++;
-                fieldState.status = 'empty';
-                fieldState.crop = null;
-                alert("تم حصاد المحصول بنجاح ووضعه في مستودع الشحن الفوري الخاص بك! 📦");
-                updateUI();
-                updateFieldMenuUI();
+                inventory[fieldState.crop]++; fieldState.status = 'empty'; fieldState.crop = null;
+                alert("تم المنجل وحصاد المواد لجرار الشحن بنجاح! 📦");
+                updateUI(); updateFieldMenuUI();
             }
         }
 
-        // تشغيل خط المصنع والمعمل لإنتاج الجواهر النادرة
         function updateFactoryMenuUI() {
-            const statusText = document.getElementById('factory-status');
-            const collectBtn = document.getElementById('collect-factory-btn');
-            
+            const statusText = document.getElementById('factory-status'); const collectBtn = document.getElementById('collect-factory-btn');
             document.getElementById('fact-t').innerText = isVip ? timings.factory/2 : timings.factory;
 
-            if(factoryState.status === 'idle') {
-                statusText.innerText = "خط الإنتاج: 🏭 متوقف بانتظار توريد المواد الخام (قمح).";
-                collectBtn.classList.add('hidden');
-            } else if(factoryState.status === 'running') {
-                statusText.innerText = `⏳ جاري معالجة وتخمير المنتجات... متبقي: ${factoryState.maxTime - factoryState.timer} ثانية.`;
-                collectBtn.classList.add('hidden');
-            } else if(factoryState.status === 'ready') {
-                statusText.innerText = "🎉 اكتملت الدورة الإنتاجية بنجاح! الجواهر جاهزة للاستلام.";
-                collectBtn.classList.remove('hidden');
-            }
+            if(factoryState.status === 'idle') { statusText.innerText = "خط معالجة الألبان متوقف بانتظار توريد قمح الماشية."; collectBtn.classList.add('hidden'); }
+            else if(factoryState.status === 'running') { statusText.innerText = `🏭 المصنع يعمل بأقصى طاقة.. متبقي: ${factoryState.maxTime - factoryState.timer} ثانية.`; collectBtn.classList.add('hidden'); }
+            else if(factoryState.status === 'ready') { statusText.innerText = "اكتمل خط التصنيع والبلورة السحرية للجواهر!"; collectBtn.classList.remove('hidden'); }
         }
 
         function startFactory() {
-            if(factoryState.status !== 'idle') { alert("المصنع يعمل على خط إنتاج آخر حالياً!"); return; }
-            if(inventory.wheat < 2) { alert("المكونات غير كافية! تحتاج إلى حصاد 2 قمح 🌾 لتشغيل المصنع وإنتاج الجواهر."); return; }
+            if(factoryState.status !== 'idle') return;
+            if(inventory.wheat < 3) { alert("تحتاج إلى 3 قطع قمح 🌾 لتغذية الماشية وتشغيل خط المصنع السري!"); return; }
 
-            inventory.wheat -= 2;
+            inventory.wheat -= 3;
             let actualTime = isVip ? timings.factory / 2 : timings.factory;
-
-            factoryState.status = 'running';
-            factoryState.timer = 0;
-            factoryState.maxTime = actualTime;
+            factoryState.status = 'running'; factoryState.timer = 0; factoryState.maxTime = actualTime;
 
             factoryState.intervalId = setInterval(() => {
                 factoryState.timer++;
-                if(factoryState.timer >= factoryState.maxTime) {
-                    clearInterval(factoryState.intervalId);
-                    factoryState.status = 'ready';
-                }
+                if(factoryState.timer >= factoryState.maxTime) { clearInterval(factoryState.intervalId); factoryState.status = 'ready'; }
                 updateFactoryMenuUI();
             }, 1000);
-
-            updateUI();
-            updateFactoryMenuUI();
+            updateUI(); updateFactoryMenuUI();
         }
 
         function collectFactory() {
             if(factoryState.status === 'ready') {
-                gems += 1; // إنتاج جوهرة واحدة صعبة جداً
-                factoryState.status = 'idle';
-                alert("استلمت 1 جوهرة نادرة 💎 من خط إنتاج المصنع!");
-                updateUI();
-                updateFactoryMenuUI();
+                gems += 1; factoryState.status = 'idle';
+                alert("استلمت 1 جوهرة ثمينة 💎 من عوائد المصنع الكبرى!");
+                updateUI(); updateFactoryMenuUI();
             }
         }
 
-        // تحديث وعرض لوحة التجارة والبيع بأسعار صعبة وتنافسية
         function updateShopMenuUI() {
-            const list = document.getElementById('shop-inventory-list');
-            list.innerHTML = '';
-
-            const items = [
-                { key: 'wheat', name: 'قمح عادي 🌾', reward: 15 },
-                { key: 'gold_potato', name: 'بطاطس ذهبية نادرة 🥔', reward: 120 } // المحصول النادر يمنح ذهب وفير جداً عند بيعه
-            ];
+            const list = document.getElementById('shop-inventory-list'); list.innerHTML = '';
+            const items = [{ key: 'wheat', name: 'قمح ريفي 🌾', reward: 25 }, { key: 'gold_potato', name: 'بطاطس بلاتينية 🥔', reward: 160 }];
 
             items.forEach(item => {
-                const count = inventory[item.key];
-                const div = document.createElement('div');
+                const count = inventory[item.key]; const div = document.createElement('div');
                 div.className = "flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700";
                 div.innerHTML = `
-                    <div>
-                        <span class="font-bold text-sm">${item.name}</span>
-                        <p class="text-xs text-slate-400">بحوزتك حالياً: <span class="text-amber-400 font-bold">${count}</span></p>
-                    </div>
-                    <button onclick="sellToMerchant('${item.key}', ${item.reward})" ${count <= 0 ? 'disabled class="bg-gray-700 text-gray-400 text-xs px-3 py-2 rounded-lg cursor-not-allowed"' : 'class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3 py-2 rounded-lg font-black"'}>
-                        بيع بـ [🪙${item.reward}]
-                    </button>
+                    <div><span class="font-bold text-sm">${item.name}</span><p class="text-xs text-slate-400">بالمخزن الحالي: <span class="text-amber-400 font-bold">${count}</span></p></div>
+                    <button onclick="sellToMerchant('${item.key}', ${item.reward})" ${count <= 0 ? 'disabled class="bg-gray-700 text-gray-400 text-xs px-3 py-2 rounded-lg cursor-not-allowed"' : 'class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3 py-2 rounded-lg font-black"'}>بيع [🪙${item.reward}]</button>
                 `;
                 list.appendChild(div);
             });
         }
 
         function sellToMerchant(key, price) {
-            if(inventory[key] >= 1) {
-                inventory[key]--;
-                gold += price;
-                updateUI();
-                updateShopMenuUI();
-            }
+            if(inventory[key] >= 1) { inventory[key]--; gold += price; updateUI(); updateShopMenuUI(); }
         }
 
-        // متجر رتبة VIP لتقليص الوقت للنصف بـ 5 جواهر نادرة جداً
-        function openVipShop() {
-            closeAllMenus();
-            document.getElementById('menu-vip').classList.remove('hidden');
-            if(isVip) {
-                document.getElementById('buy-vip-btn').innerText = "👑 أنت عضو VIP بالفعل الدائم";
-                document.getElementById('buy-vip-btn').disabled = true;
-            }
-        }
-
+        function openVipShop() { closeAllMenus(); document.getElementById('menu-vip').classList.remove('hidden'); if(isVip) { document.getElementById('buy-vip-btn').innerText = "👑 العضوية نشطة للأبد"; document.getElementById('buy-vip-btn').disabled = true; } }
         function buyVipMembership() {
             if(isVip) return;
-            if(gems >= 5) {
-                gems -= 5;
-                isVip = true;
-                alert("👑 تهانينا الحارة! تم تفعيل رتبة الـ VIP بنجاح. تم خفض كافة أوقات المزرعة والمصانع إلى النصف بشكل دائم!");
-                updateUI();
-                closeAllMenus();
-            } else {
-                alert("الجواهر المتوفرة لديك غير كافية! تحتاج إلى 5 جواهر 💎 لتفعيل الرتبة.");
-            }
+            if(gems >= 5) { gems -= 5; isVip = true; alert("👑 تم تفعيل حزمة الـ VIP بنجاح! تم خفض زمن الإنتاج والنمو للنصف فوراً وللأبد!"); updateUI(); closeAllMenus(); }
+            else { alert("الجواهر غير كافية لتأمين الصفقة العالية! 💎"); }
         }
 
-        // السماح باللمس على لوحة التوجيه لفتح القائمة لسهولة اللعب على الشاشات الذكية
+        // دعم فتح القوائم عند لمس التلميح على أجهزة الموبايل
         document.getElementById('interaction-prompt').addEventListener('click', () => {
             structures.forEach(struct => {
                 let closestX = Math.max(struct.x, Math.min(player.x, struct.x + struct.w));
                 let closestY = Math.max(struct.y, Math.min(player.y, struct.y + struct.h));
-                let distX = player.x - closestX;
-                let distY = player.y - closestY;
-                if (Math.sqrt(distX*distX + distY*distY) < player.radius + 15) {
-                    openStructureMenu(struct.id);
-                }
+                if (Math.sqrt((player.x - closestX)**2 + (player.y - closestY)**2) < player.radius + 15) { openStructureMenu(struct.id); }
             });
         });
     </script>
