@@ -3,421 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💥 BATTLEZONE MOBILE: PRO EDITION</title>
+    <title>💥 BATTLEZONE MOBILE: ABSOLUTE FIXED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { margin: 0; padding: 0; background: #090d16; overflow: hidden; user-select: none; -webkit-user-select: none; font-family: system-ui, sans-serif; color: #fff; touch-action: none; }
-        #gameCanvas { display: block; background: #1e293b; }
-        .hud-overlay { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); border: 1px solid #334155; }
-        
-        /* منطقة التحكم اليسرى المعزولة (الجوستيك) */
-        .controls-left-zone { position: absolute; bottom: 0; left: 0; width: 40%; height: 50%; display: flex; align-items: center; justify-content: center; z-index: 40; }
-        #touch-joystick-zone { width: 130px; height: 130px; background: rgba(255, 255, 255, 0.08); border: 3px solid rgba(255,255,255,0.25); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-        #touch-joystick-knob { width: 55px; height: 55px; background: linear-gradient(145deg, #ef4444, #b91c1c); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
-        
-        /* منطقة التحكم اليمنى المعزولة (الضرب) */
-        .controls-right-zone { position: absolute; bottom: 0; right: 0; width: 40%; height: 50%; display: flex; align-items: center; justify-content: center; z-index: 40; }
-        #touch-fire-btn { width: 100px; height: 100px; background: linear-gradient(145deg, #dc2626, #991b1b); border: 4px solid #f87171; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; box-shadow: 0 8px 25px rgba(220,38,38,0.5); text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #090d16; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; }
+        canvas { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="w-screen h-screen relative flex items-center justify-center overflow-hidden">
+<body class="relative flex items-center justify-center">
 
-    <div id="setup-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 p-4">
-        <div class="bg-slate-900/95 border-2 border-red-500 rounded-3xl p-6 max-w-sm w-full shadow-2xl backdrop-blur-md">
-            <div class="text-5xl mb-1 text-center animate-pulse">⚔️</div>
-            <h2 class="text-xl font-black text-center text-red-500 mb-4 font-mono tracking-wider">BATTLEZONE MOBILE V3.1</h2>
-            
-            <div id="security-pass">
-                <input type="text" id="passwordInput" value="15711" placeholder="أدخل رمز تشغيل النظام (15711)" class="w-full p-3 mb-3 rounded-xl bg-slate-800 border border-slate-700 text-center font-bold text-red-400 outline-none focus:border-red-500 text-sm"/>
-            </div>
-
-            <div id="game-options" class="space-y-3">
-                <div>
-                    <label class="text-[11px] text-slate-400 font-bold block mb-1">🗺️ اختر ساحة المعركة (الملعب):</label>
-                    <select id="map-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold text-xs text-amber-400 outline-none">
-                        <option value="hotel">🏨 الفندق الفاخر (مساحات مفتوحة وغرف واسعة)</option>
-                        <option value="building">🏢 المبنى السكني (ممرات ضيقة وتكتيك تصادم)</option>
-                        <option value="arena">🏜️ الساحة العسكرية المفتوحة (مواجهة طحن مباشرة)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-[11px] text-slate-400 font-bold block mb-1">🔥 مستوى ذكاء الكمبيوتر (Bots):</label>
-                    <select id="diff-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold text-xs text-red-400 outline-none">
-                        <option value="medium">💀 متوسط (تحركات عشوائية وتصويب عادي)</option>
-                        <option value="hard">☣️ صعب جداً (مطاردة ذكية وتصويب قاتل ومحترف)</option>
-                    </select>
-                </div>
-
-                <button onclick="startBattle()" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white p-3.5 rounded-xl text-md font-black shadow-lg transition-all transform active:scale-95 mt-2">دخول المعركة الفورية 💥</button>
-            </div>
+    <!-- شاشة البداية والاختيارات -->
+    <div id="setup-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 p-4">
+        <div class="bg-slate-900 border-2 border-red-500 rounded-2xl p-5 max-w-xs w-full text-center">
+            <h2 class="text-lg font-black text-red-500 mb-3">BATTLEZONE MOBILE V4</h2>
+            <input type="text" id="passwordInput" value="15711" class="w-full p-2 mb-3 rounded-lg bg-slate-800 text-center font-bold text-red-400 outline-none text-xs"/>
+            <select id="map-select" class="w-full p-2 mb-3 rounded-lg bg-slate-800 font-bold text-xs text-amber-400 outline-none">
+                <option value="hotel">🏨 الفندق الفاخر</option>
+                <option value="building">🏢 المبنى السكني</option>
+                <option value="arena">🏜️ الساحة المفتوحة</option>
+            </select>
+            <select id="diff-select" class="w-full p-2 mb-4 rounded-lg bg-slate-800 font-bold text-xs text-red-400 outline-none">
+                <option value="medium">💀 مستوى متوسط</option>
+                <option value="hard">☣️ مستوى محترف</option>
+            </select>
+            <button onclick="startBattle()" class="w-full bg-red-600 text-white p-2.5 rounded-lg font-black text-sm">ابدأ القتال فوراً 💥</button>
         </div>
     </div>
 
-    <div id="hud" class="absolute top-3 left-4 right-4 z-30 flex items-center justify-between pointer-events-none hidden">
-        <div class="flex gap-2 pointer-events-auto">
-            <div class="hud-overlay px-3 py-1.5 rounded-xl flex items-center gap-1.5 border-red-500/40">
-                <span class="text-xs font-bold text-red-400">❤️ الصّحة:</span>
-                <span id="player-hp" class="font-black text-md text-red-500">100</span>
-            </div>
-            <div class="hud-overlay px-3 py-1.5 rounded-xl flex flex-col border-amber-500/40">
-                <div id="weapon-name" class="font-black text-xs text-amber-400">رشاش عادي [M4]</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="weapon-dock" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 hud-overlay p-1.5 rounded-2xl border-slate-700 flex gap-2 hidden max-w-[90vw]">
-        <button onclick="switchWeapon('m4')" id="btn-m4" class="bg-amber-500 text-slate-950 text-[11px] px-3 py-2 rounded-xl font-black border border-amber-300 whitespace-nowrap">M4 🔫</button>
-        <button onclick="switchWeapon('shotgun')" id="btn-shotgun" class="bg-slate-800 text-orange-400 text-[11px] px-3 py-2 rounded-xl font-black border border-slate-700 whitespace-nowrap">شوتجن 💥</button>
-        <button onclick="switchWeapon('sniper')" id="btn-sniper" class="bg-slate-800 text-cyan-400 text-[11px] px-3 py-2 rounded-xl font-black border border-slate-700 whitespace-nowrap">قناص 💎</button>
-    </div>
-
-    <canvas id="gameCanvas" class="hidden shadow-2xl"></canvas>
-
-    <div class="controls-left-zone hidden" id="left-touch-container">
-        <div id="touch-joystick-zone">
-            <div id="touch-joystick-knob"></div>
-        </div>
-    </div>
-
-    <div class="controls-right-zone hidden" id="right-touch-container">
-        <div id="touch-fire-btn">🔥</div>
-    </div>
+    <!-- الكانفاس الأساسي (كل شيء يرسم ويلمس هنا بكفاءة 100%) -->
+    <canvas id="gameCanvas" class="hidden"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
         const weaponsConfig = {
-            m4: { name: 'رشاش M4 [ممتاز]', speed: 11, damage: 10, fireRate: 180, color: '#fbbf24', size: 3, spread: false },
-            shotgun: { name: 'شوتجن مدمر [ملحمي]', speed: 9, damage: 22, fireRate: 650, color: '#f97316', size: 4, spread: true },
-            sniper: { name: 'قناص بلاتيني [نادر جداً] 💎', speed: 22, damage: 60, fireRate: 1200, color: '#06b6d4', size: 5, spread: false }
+            m4: { name: 'M4 الرشاش', speed: 12, damage: 10, fireRate: 150, color: '#fbbf24', size: 3, spread: false },
+            shotgun: { name: 'شوتجن مدمر', speed: 9, damage: 25, fireRate: 600, color: '#f97316', size: 4, spread: true },
+            sniper: { name: 'قناص بلاتيني', speed: 25, damage: 60, fireRate: 1100, color: '#06b6d4', size: 5, spread: false }
         };
 
-        let player = { x: 100, y: 200, hp: 100, maxHp: 100, speed: 4, r: 15, color: '#3b82f6', weapon: 'm4', lastShot: 0, angle: 0 };
-        let bots = [];
-        let bullets = [];
-        let particles = [];
-        let walls = [];
+        let player = { x: 100, y: 150, hp: 100, maxHp: 100, speed: 4, r: 14, color: '#3b82f6', weapon: 'm4', lastShot: 0, angle: 0 };
+        let bots = []; let bullets = []; let particles = []; let walls = [];
+        let botDifficulty = 'medium'; let isGameRunning = false;
 
-        let botDifficulty = 'medium';
-        let isGameRunning = false;
-        
-        // معرفات اللمس (Multi-touch tracking) لمنع التعليق نهائياً لقوة الأداء
-        let joystickTouchId = null;
-        let fireTouchId = null;
-        
-        let joyStartX = 0, joyStartY = 0;
-        let playerVx = 0, playerVy = 0;
-        let isFiring = false;
+        // إحداثيات وأحجام زراير الشاشة (ترسم داخل الكانفاس لتفادي مشاكل الأبعاد)
+        let controls = {
+            joy: { x: 0, y: 0, r: 55, knobX: 0, knobY: 0, knobR: 24, touchId: null, active: false },
+            fire: { x: 0, y: 0, r: 45, active: false, touchId: null },
+            weaponBtn: { x: 0, y: 0, w: 100, h: 35 } // زر تبديل السلاح العلوي
+        };
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            if(isGameRunning) {
-                // إعادة بناء الجدران لتتناسب ديناميكياً مع الأبعاد الجديدة للشاشة
-                const selectedMap = document.getElementById('map-select').value;
-                buildMapWalls(selectedMap);
-            }
+            
+            // ضبط توازن أزرار التحكم هندسياً حسب حجم الشاشة الفعلي (طولي أو عرضي)
+            controls.joy.x = 80;
+            controls.joy.y = canvas.height - 80;
+            controls.joy.knobX = controls.joy.x;
+            controls.joy.knobY = controls.joy.y;
+
+            controls.fire.x = canvas.width - 80;
+            controls.fire.y = canvas.height - 80;
+
+            controls.weaponBtn.x = canvas.width / 2 - 50;
+            controls.weaponBtn.y = 15;
+
+            if(isGameRunning) buildMapWalls(document.getElementById('map-select').value);
         }
 
         function startBattle() {
-            const pass = document.getElementById('passwordInput').value.trim();
-            if (pass !== '15711') { alert('رمز إدارة قفل الأنظمة خاطئ! ❌'); return; }
-
+            if (document.getElementById('passwordInput').value.trim() !== '15711') return;
             botDifficulty = document.getElementById('diff-select').value;
-            const selectedMap = document.getElementById('map-select').value;
-
+            
             document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('hud').classList.remove('hidden');
-            document.getElementById('weapon-dock').classList.remove('hidden');
-            document.getElementById('left-touch-container').classList.remove('hidden');
-            document.getElementById('right-touch-container').classList.remove('hidden');
             canvas.classList.remove('hidden');
-
+            
+            isGameRunning = true;
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-
-            buildMapWalls(selectedMap);
+            
+            buildMapWalls(document.getElementById('map-select').value);
             spawnBots();
-            initAdvancedTouchControls();
-
-            isGameRunning = true;
+            setupDirectTouch();
+            
             requestAnimationFrame(battleLoop);
         }
 
         function buildMapWalls(type) {
-            walls = [];
-            // الحواف الخارجية
-            walls.push({ x: 0, y: 0, w: canvas.width, h: 15 }, { x: 0, y: canvas.height-15, w: canvas.width, h: 15 },
-                       { x: 0, y: 0, w: 15, h: canvas.height }, { x: canvas.width-15, y: 0, w: 15, h: canvas.height });
-
+            walls = [
+                { x: 0, y: 0, w: canvas.width, h: 10 }, { x: 0, y: canvas.height-10, w: canvas.width, h: 10 },
+                { x: 0, y: 0, w: 10, h: canvas.height }, { x: canvas.width-10, y: 0, w: 10, h: canvas.height }
+            ];
             if (type === 'building') {
-                walls.push({ x: canvas.width*0.25, y: 15, w: 25, h: canvas.height*0.35 }, 
-                           { x: canvas.width*0.25, y: canvas.height*0.65, w: 25, h: canvas.height*0.35 },
-                           { x: canvas.width*0.55, y: canvas.height*0.2, w: canvas.width*0.3, h: 25 },
-                           { x: canvas.width*0.55, y: canvas.height*0.2, w: 25, h: canvas.height*0.45 });
-            } else if (type === 'hotel') {
-                walls.push({ x: canvas.width*0.2, y: canvas.height*0.25, w: 90, h: 90 }, 
-                           { x: canvas.width*0.7, y: canvas.height*0.25, w: 90, h: 90 },
-                           { x: canvas.width*0.4, y: canvas.height*0.6, w: canvas.width*0.2, h: 25 });
-            } else if (type === 'arena') {
-                walls.push({ x: canvas.width*0.18, y: canvas.height*0.3, w: 40, h: 40 }, 
-                           { x: canvas.width*0.75, y: canvas.height*0.3, w: 40, h: 40 },
-                           { x: canvas.width*0.46, y: canvas.height*0.42, w: 50, h: 80 });
+                walls.push({ x: canvas.width*0.3, y: 10, w: 20, h: canvas.height*0.4 }, { x: canvas.width*0.6, y: canvas.height*0.5, w: 20, h: canvas.height*0.4 });
+            } else {
+                walls.push({ x: canvas.width*0.4, y: canvas.height*0.3, w: canvas.width*0.2, h: 30 });
             }
         }
 
         function spawnBots() {
             bots = [
-                { id: 1, x: canvas.width * 0.8, y: canvas.height * 0.2, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.8 : 1.6, r: 14, lastShot: 0, vx: 1, vy: 1 },
-                { id: 2, x: canvas.width * 0.85, y: canvas.height * 0.8, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.8 : 1.6, r: 14, lastShot: 0, vx: -1, vy: 1 },
-                { id: 3, x: canvas.width * 0.5, y: canvas.height * 0.75, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.8 : 1.6, r: 14, lastShot: 0, vx: 1, vy: -1 }
+                { x: canvas.width * 0.8, y: canvas.height * 0.3, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.5 : 1.5, r: 13, lastShot: 0, vx: 1, vy: 1 },
+                { x: canvas.width * 0.7, y: canvas.height * 0.7, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.5 : 1.5, r: 13, lastShot: 0, vx: -1, vy: 1 }
             ];
         }
 
-        // إعداد ميكانيكية اللمس المتعدد المتقدمة لمنع تعليق الحركة والضرب معاً كفاءة 100%
-        function initAdvancedTouchControls() {
-            const leftContainer = document.getElementById('left-touch-container');
-            const rightContainer = document.getElementById('right-touch-container');
-            const joyZone = document.getElementById('touch-joystick-zone');
-            const joyKnob = document.getElementById('touch-joystick-knob');
-
-            // إدارة منطقة اللمس الخاصة بالنصف الأيسر للـ Joystick
-            leftContainer.addEventListener('touchstart', e => {
-                if (joystickTouchId !== null) return; // قفل اللمس الأحادي للجوستيك
-                const touch = e.changedTouches[0];
-                joystickTouchId = touch.identifier;
-                
-                const rect = joyZone.getBoundingClientRect();
-                joyStartX = rect.left + rect.width / 2;
-                joyStartY = rect.top + rect.height / 2;
-            });
-
-            window.addEventListener('touchmove', e => {
-                // معالجة حركة الجوستيك المستقلة
-                for (let i = 0; i < e.touches.length; i++) {
-                    if (e.touches[i].identifier === joystickTouchId) {
-                        const touch = e.touches[i];
-                        let dx = touch.clientX - joyStartX;
-                        let dy = touch.clientY - joyStartY;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        const maxDist = 45;
-
-                        if (dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
-                        joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-
-                        playerVx = (dx / maxDist) * player.speed;
-                        playerVy = (dy / maxDist) * player.speed;
-                        player.angle = Math.atan2(playerVy, playerVx);
-                    }
-                }
-            });
-
-            const resetJoystick = (e) => {
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    if (e.changedTouches[i].identifier === joystickTouchId) {
-                        joystickTouchId = null;
-                        joyKnob.style.transform = 'translate(0px, 0px)';
-                        playerVx = 0; playerVy = 0;
-                    }
-                }
-            };
-            window.addEventListener('touchend', resetJoystick);
-            window.addEventListener('touchcancel', resetJoystick);
-
-            // إدارة منطقة اللمس الخاصة بالنصف الأيمن لزر ضرب النار
-            rightContainer.addEventListener('touchstart', e => {
-                if (fireTouchId !== null) return;
-                const touch = e.changedTouches[0];
-                fireTouchId = touch.identifier;
-                isFiring = true;
-            });
-
-            const resetFire = (e) => {
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    if (e.changedTouches[i].identifier === fireTouchId) {
-                        fireTouchId = null;
-                        isFiring = false;
-                    }
-                }
-            };
-            window.addEventListener('touchend', resetFire);
-            window.addEventListener('touchcancel', resetFire);
+        // معالجة اللمس المباشر على الكانفاس بدون وساطة الـ HTML (كفاءة واستجابة فورية)
+        function setupDirectTouch() {
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+            canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
 
-        function switchWeapon(type) {
-            player.weapon = type;
-            document.getElementById('weapon-name').innerText = weaponsConfig[type].name;
-            
-            document.querySelectorAll('#weapon-dock button').forEach(b => {
-                b.classList.remove('bg-amber-500', 'text-slate-950');
-                b.classList.add('bg-slate-800', 'text-slate-400');
-            });
-            const activeBtn = document.getElementById(`btn-${type}`);
-            activeBtn.classList.remove('bg-slate-800', 'text-slate-400');
-            activeBtn.classList.add('bg-amber-500', 'text-slate-950');
-        }
+        function handleTouchStart(e) {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const t = e.changedTouches[i];
+                const tx = t.clientX; const ty = t.clientY;
 
-        function triggerWeaponShoot(p) {
-            const now = Date.now();
-            const config = weaponsConfig[p.weapon];
-            if (now - p.lastShot < config.fireRate) return;
-
-            p.lastShot = now;
-            if (config.spread) {
-                for (let i = -1; i <= 1; i++) {
-                    bullets.push({ x: p.x, y: p.y, angle: p.angle + (i * 0.16), speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: p });
+                // 1. لمس منطقة الـ Joystick
+                let distJoy = Math.sqrt((tx - controls.joy.x)**2 + (ty - controls.joy.y)**2);
+                if (distJoy < controls.joy.r + 20 && controls.joy.touchId === null) {
+                    controls.joy.touchId = t.identifier;
+                    controls.joy.active = true;
+                    updateJoystickKnob(tx, ty);
                 }
-            } else {
-                bullets.push({ x: p.x, y: p.y, angle: p.angle, speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: p });
+
+                // 2. لمس منطقة زر ضرب النار
+                let distFire = Math.sqrt((tx - controls.fire.x)**2 + (ty - controls.fire.y)**2);
+                if (distFire < controls.fire.r + 20 && controls.fire.touchId === null) {
+                    controls.fire.touchId = t.identifier;
+                    controls.fire.active = true;
+                }
+
+                // 3. لمس زر تبديل السلاح العلوي
+                if (tx > controls.weaponBtn.x && tx < controls.weaponBtn.x + controls.weaponBtn.w &&
+                    ty > controls.weaponBtn.y && ty < controls.weaponBtn.y + controls.weaponBtn.h) {
+                    cycleWeapons();
+                }
             }
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            for (let i = 0; i < e.touches.length; i++) {
+                const t = e.touches[i];
+                if (t.identifier === controls.joy.touchId) {
+                    updateJoystickKnob(t.clientX, t.clientY);
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const t = e.changedTouches[i];
+                if (t.identifier === controls.joy.touchId) {
+                    controls.joy.touchId = null;
+                    controls.joy.active = false;
+                    controls.joy.knobX = controls.joy.x;
+                    controls.joy.knobY = controls.joy.y;
+                }
+                if (t.identifier === controls.fire.touchId) {
+                    controls.fire.touchId = null;
+                    controls.fire.active = false;
+                }
+            }
+        }
+
+        function updateJoystickKnob(tx, ty) {
+            let dx = tx - controls.joy.x;
+            let dy = ty - controls.joy.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let maxDist = controls.joy.r - 15;
+
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+            controls.joy.knobX = controls.joy.x + dx;
+            controls.joy.knobY = controls.joy.y + dy;
+
+            player.angle = Math.atan2(dy, dx);
+        }
+
+        function cycleWeapons() {
+            const wkeys = Object.keys(weaponsConfig);
+            let currIdx = wkeys.indexOf(player.weapon);
+            let nextIdx = (currIdx + 1) % wkeys.length;
+            player.weapon = wkeys[nextIdx];
         }
 
         function battleLoop() {
             if (!isGameRunning) return;
-            updateLogic();
-            renderGraphics();
+            updateGameLogic();
+            renderGameGraphics();
             requestAnimationFrame(battleLoop);
         }
 
-        function updateLogic() {
-            moveEntityWithWallCollision(player, playerVx, playerVy);
+        function updateGameLogic() {
+            // معالجة حركة اللاعب بناءً على سحب الجوستيك
+            if (controls.joy.active) {
+                let vx = (controls.joy.knobX - controls.joy.x) / (controls.joy.r - 15) * player.speed;
+                let vy = (controls.joy.knobY - controls.joy.y) / (controls.joy.r - 15) * player.speed;
+                moveEntity(player, vx, vy);
+            }
 
-            // تفعيل الـ Auto-Aim لمساعدة اللمس والتصويب التلقائي الذكي
-            let closestBot = null; let minDist = 220;
+            // نظام توجيه تلقائي (Auto-Aim) للمساعدة عند اقتراب العدو
+            let closest = null; let minDist = 220;
             bots.forEach(b => {
                 let d = Math.sqrt((b.x - player.x)**2 + (b.y - player.y)**2);
-                if(d < minDist) { minDist = d; closestBot = b; }
+                if(d < minDist) { minDist = d; closest = b; }
             });
-            if(closestBot) { player.angle = Math.atan2(closestBot.y - player.y, closestBot.x - player.x); }
+            if(closest) player.angle = Math.atan2(closest.y - player.y, closest.x - player.x);
 
-            if (isFiring) { triggerWeaponShoot(player); }
+            // إطلاق النار المستمر عند تفعيل اللمس
+            if (controls.fire.active) {
+                const now = Date.now();
+                const config = weaponsConfig[player.weapon];
+                if (now - player.lastShot >= config.fireRate) {
+                    player.lastShot = now;
+                    if(config.spread) {
+                        for(let i=-1; i<=1; i++) bullets.push({ x: player.x, y: player.y, angle: player.angle + i*0.15, speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: 'player' });
+                    } else {
+                        bullets.push({ x: player.x, y: player.y, angle: player.angle, speed: config.speed, damage: config.damage, color: config.color, size: config.size, owner: 'player' });
+                    }
+                }
+            }
 
-            // الذكاء الاصطناعي للبوتات
+            // حركة البوتات وتصويبهم
             bots.forEach(bot => {
-                let distToPlayer = Math.sqrt((player.x - bot.x)**2 + (player.y - bot.y)**2);
+                let d = Math.sqrt((player.x - bot.x)**2 + (player.y - bot.y)**2);
                 bot.angle = Math.atan2(player.y - bot.y, player.x - bot.x);
 
                 if (botDifficulty === 'hard') {
-                    let bdx = (player.x - bot.x) / distToPlayer * bot.speed;
-                    let bdy = (player.y - bot.y) / distToPlayer * bot.speed;
-                    moveEntityWithWallCollision(bot, bdx, bdy);
-
-                    if (distToPlayer < 300 && Date.now() - bot.lastShot > 500) {
-                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle + (Math.random()*0.06 - 0.03), speed: 8, damage: 8, color: '#f43f5e', size: 3, owner: bot });
+                    moveEntity(bot, (player.x - bot.x)/d * bot.speed, (player.y - bot.y)/d * bot.speed);
+                    if (d < 280 && Date.now() - bot.lastShot > 600) {
+                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle, speed: 7, damage: 8, color: '#f43f5e', size: 3, owner: 'bot' });
                         bot.lastShot = Date.now();
                     }
                 } else {
-                    if(Math.random() < 0.02) { bot.vx = (Math.random() - 0.5) * bot.speed * 2; bot.vy = (Math.random() - 0.5) * bot.speed * 2; }
-                    moveEntityWithWallCollision(bot, bot.vx, bot.vy);
-
-                    if (distToPlayer < 220 && Math.random() < 0.02 && Date.now() - bot.lastShot > 850) {
-                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle, speed: 6.5, damage: 6, color: '#f43f5e', size: 3, owner: bot });
+                    if(Math.random() < 0.02) { bot.vx = (Math.random()-0.5)*3; bot.vy = (Math.random()-0.5)*3; }
+                    moveEntity(bot, bot.vx || 0, bot.vy || 0);
+                    if (d < 180 && Math.random() < 0.02 && Date.now() - bot.lastShot > 1000) {
+                        bullets.push({ x: bot.x, y: bot.y, angle: bot.angle, speed: 6, damage: 6, color: '#f43f5e', size: 3, owner: 'bot' });
                         bot.lastShot = Date.now();
                     }
                 }
             });
 
-            // حركة واصطدام الرصاص بالكامل
+            // تحديث الرصاص واكتشاف الاصطدام
             for (let i = bullets.length - 1; i >= 0; i--) {
                 let b = bullets[i];
                 b.x += Math.cos(b.angle) * b.speed;
                 b.y += Math.sin(b.angle) * b.speed;
 
-                let hitWall = false;
+                let hit = false;
                 for (let w of walls) {
-                    if (b.x > w.x && b.x < w.x + w.w && b.y > w.y && b.y < w.y + w.h) { hitWall = true; break; }
+                    if (b.x > w.x && b.x < w.x + w.w && b.y > w.y && b.y < w.y + w.h) { hit = true; break; }
                 }
-                if (hitWall) { bullets.splice(i, 1); continue; }
+                if (hit) { bullets.splice(i, 1); continue; }
 
-                if (b.owner !== player && checkCircleCollision(b.x, b.y, b.size, player.x, player.y, player.r)) {
-                    player.hp -= b.damage; spawnBlood(b.x, b.y); bullets.splice(i, 1);
-                    document.getElementById('player-hp').innerText = Math.max(0, player.hp);
-                    if(player.hp <= 0) gameOver(false);
+                if (b.owner === 'bot' && Math.img && Math.sqrt((b.x - player.x)**2 + (b.y - player.y)**2) < player.r) {
+                    player.hp -= b.damage; bullets.splice(i, 1);
+                    if(player.hp <= 0) endGame(false);
+                    continue;
+                } else if (b.owner === 'bot' && Math.sqrt((b.x - player.x)**2 + (b.y - player.y)**2) < player.r) {
+                    player.hp -= b.damage; bullets.splice(i, 1);
+                    if(player.hp <= 0) endGame(false);
                     continue;
                 }
 
-                for (let j = bots.length - 1; j >= 0; j--) {
-                    let bot = bots[j];
-                    if (b.owner === player && checkCircleCollision(b.x, b.y, b.size, bot.x, bot.y, bot.r)) {
-                        bot.hp -= b.damage; spawnBlood(b.x, b.y); bullets.splice(i, 1);
-                        if (bot.hp <= 0) { bots.splice(j, 1); if(bots.length === 0) gameOver(true); }
-                        break;
+                if (b.owner === 'player') {
+                    for (let j = bots.length - 1; j >= 0; j--) {
+                        if (Math.sqrt((b.x - bots[j].x)**2 + (b.y - bots[j].y)**2) < bots[j].r) {
+                            bots[j].hp -= b.damage;
+                            bullets.splice(i, 1);
+                            if(bots[j].hp <= 0) { bots.splice(j, 1); if(bots.length === 0) endGame(true); }
+                            break;
+                        }
                     }
                 }
             }
-
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life--;
-                if(p.life <= 0) particles.splice(i, 1);
-            }
         }
 
-        function moveEntityWithWallCollision(entity, dx, dy) {
-            entity.x += dx;
-            for (let w of walls) {
-                if (entity.x + entity.r > w.x && entity.x - entity.r < w.x + w.w && entity.y + entity.r > w.y && entity.y - entity.r < w.y + w.h) {
-                    entity.x -= dx; break;
-                }
-            }
-            entity.y += dy;
-            for (let w of walls) {
-                if (entity.x + entity.r > w.x && entity.x - entity.r < w.x + w.w && entity.y + entity.r > w.y && entity.y - entity.r < w.y + w.h) {
-                    entity.y -= dy; break;
-                }
-            }
+        function moveEntity(e, vx, vy) {
+            e.x += vx;
+            for(let w of walls) { if(e.x+e.r > w.x && e.x-e.r < w.x+w.w && e.y+e.r > w.y && e.y-e.r < w.y+w.h) e.x -= vx; }
+            e.y += vy;
+            for(let w of walls) { if(e.x+e.r > w.x && e.x-e.r < w.x+w.w && e.y+e.r > w.y && e.y-e.r < w.y+w.h) e.y -= vy; }
         }
 
-        function checkCircleCollision(x1, y1, r1, x2, y2, r2) {
-            return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < (r1 + r2);
-        }
-
-        function spawnBlood(x, y) {
-            for(let i=0; i<5; i++) {
-                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 12, color: '#ef4444' });
-            }
-        }
-
-        function renderGraphics() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+        function renderGameGraphics() {
             ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = '#475569'; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
-            walls.forEach(w => { ctx.fillRect(w.x, w.y, w.w, w.h); ctx.strokeRect(w.x, w.y, w.w, w.h); });
+            // رسم الجدران
+            ctx.fillStyle = '#475569'; walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
 
-            particles.forEach(p => { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 4, 4); });
+            // رسم الرصاص
+            bullets.forEach(b => { ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.fill(); });
 
-            bullets.forEach(b => {
-                ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.fill();
-            });
+            // رسم جندي اللاعب والبوتات
+            drawCharacter(player);
+            bots.forEach(drawCharacter);
 
-            drawSoldier(player);
-            bots.forEach(bot => { drawSoldier(bot); });
+            // رسم أزرار واجهة الموبايل (HUD والأزرار التفاعلية على الكانفاس مباشرة)
+            drawCanvasUI();
         }
 
-        function drawSoldier(s) {
-            ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.angle);
-
-            ctx.fillStyle = '#94a3b8'; ctx.fillRect(10, -3, 16, 6);
-            if(s.weapon === 'sniper') { ctx.fillStyle = '#06b6d4'; ctx.fillRect(10, -2, 24, 4); }
-
-            ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(0, 0, s.r, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
-
+        function drawCharacter(c) {
+            ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.angle);
+            ctx.fillStyle = '#94a3b8'; ctx.fillRect(8, -2, 14, 4); // السلاح
+            ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(0, 0, c.r, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
             ctx.restore();
 
-            ctx.fillStyle = '#ef4444'; ctx.fillRect(s.x - 18, s.y - 22, 36, 4);
-            ctx.fillStyle = '#22c55e'; ctx.fillRect(s.x - 18, s.y - 22, 36 * (s.hp / s.maxHp), 4);
+            // شريط الحياة
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(c.x - 15, c.y - 20, 30, 3);
+            ctx.fillStyle = '#22c55e'; ctx.fillRect(c.x - 15, c.y - 20, 30 * (c.hp / c.maxHp), 3);
         }
 
-        function gameOver(isWin) {
+        function drawCanvasUI() {
+            // 1. رسم الـ Joystick (شمال)
+            ctx.beginPath(); ctx.arc(controls.joy.x, controls.joy.y, controls.joy.r, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.07)'; ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; ctx.lineWidth = 2; ctx.stroke();
+
+            ctx.beginPath(); ctx.arc(controls.joy.knobX, controls.joy.knobY, controls.joy.knobR, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.85)'; ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.stroke();
+
+            // 2. رسم زر إطلاق النار (يمين)
+            ctx.beginPath(); ctx.arc(controls.fire.x, controls.fire.y, controls.fire.r, 0, Math.PI*2);
+            ctx.fillStyle = controls.fire.active ? 'rgba(220, 38, 38, 0.9)' : 'rgba(185, 28, 28, 0.7)'; ctx.fill();
+            ctx.strokeStyle = '#f87171'; ctx.lineWidth = 3; ctx.stroke();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('🔥 اضرب', controls.fire.x, controls.fire.y);
+
+            // 3. زر علوي لتبديل السلاح (مستحيل يتداخل مع الجوستيك أو الضرب)
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(controls.weaponBtn.x, controls.weaponBtn.y, controls.weaponBtn.w, controls.weaponBtn.h);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.5;
+            ctx.strokeRect(controls.weaponBtn.x, controls.weaponBtn.y, controls.weaponBtn.w, controls.weaponBtn.h);
+            
+            ctx.fillStyle = '#fbbf24'; ctx.font = '900 11px system-ui'; ctx.fillText(weaponsConfig[player.weapon].name, canvas.width/2, 32);
+
+            // 4. صحة اللاعب في الأعلى
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'left';
+            ctx.fillText(`❤️ الصّحة: ${player.hp}`, 20, 30);
+        }
+
+        function endGame(win) {
             isGameRunning = false;
-            if(isWin) { alert('🔥 مبروك الفوز الساحق! تم تطهير الساحة وتدمير البوتات بالكامل بكفاءة عسكرية!'); } 
-            else { alert('💀 لقيت حتفك! البوتات حاصرتك وقضت عليك، حاول مجدداً واستخدم الحوائط للتغطية.'); }
+            alert(win ? '🔥 كفو! تم القضاء على الهدف بنجاح!' : '💀 انتهت اللعبة! قتلتك البوتات.');
             location.reload();
         }
     </script>
