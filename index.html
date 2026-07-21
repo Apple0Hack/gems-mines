@@ -34,8 +34,9 @@
         }
 
         .games-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-top: 15px; }
-        .game-card { background: #21262d; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
+        .game-card { background: #21262d; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
         .game-card:hover { border-color: var(--accent-gold); background: #30363d; }
+        .game-card div { display: flex; align-items: center; gap: 12px; }
         .game-card span { font-size: 1.5rem; }
 
         .header { padding: 15px; background: #161b22; text-align: center; border-bottom: 2px solid var(--accent-gold); font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
@@ -100,12 +101,15 @@
 <!-- شاشة اختيار الألعاب (Lobby) -->
 <div id="lobby-screen" class="overlay" style="display:none">
     <div class="login-box" style="max-width: 400px;">
-        <h2>اختر اللعبة 🎮</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2>اختر اللعبة 🎮</h2>
+            <span style="font-size: 0.9rem; color: var(--accent-gold); background: #21262d; padding: 4px 8px; border-radius: 8px;">متبقي: <span id="global-attempts-lobby">3</span> محاولات</span>
+        </div>
         <div class="games-grid">
-            <div class="game-card" onclick="openGame('crash')"><span>✈️</span> Crash</div>
-            <div class="game-card" onclick="openGame('apple')"><span>🍎</span> Apple</div>
-            <div class="game-card" onclick="openGame('gems')"><span>💎</span> Gems & Mines</div>
-            <div class="game-card" onclick="openGame('royal')"><span>🍗</span> Royal Feast</div>
+            <div class="game-card" onclick="openGame('crash')"><div><span>✈️</span> Crash</div></div>
+            <div class="game-card" onclick="openGame('apple')"><div><span>🍎</span> Apple</div></div>
+            <div class="game-card" onclick="openGame('gems')"><div><span>💎</span> Gems & Mines</div></div>
+            <div class="game-card" onclick="openGame('royal')"><div><span>🍗</span> Royal Feast</div></div>
         </div>
         <div class="version-tag">MULTI-GAME LOBBY v6.4</div>
     </div>
@@ -119,7 +123,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة التفاحة 🍎</span>
-            <span>المحاولات: <span id="att-apple">3</span></span>
+            <span>المحاولات العامة: <span id="att-apple">3</span></span>
         </div>
         <div id="game-board-apple"></div>
         <div class="controls">
@@ -133,7 +137,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة Gems & Mines 💎</span>
-            <span>المحاولات: <span id="att-gems">3</span></span>
+            <span>المحاولات العامة: <span id="att-gems">3</span></span>
         </div>
         <div style="flex:1; display:flex; justify-content:center; align-items:center;">
             <div class="gems-container">
@@ -152,7 +156,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة Royal Feast 🍗</span>
-            <span>المحاولات: <span id="att-royal">3</span></span>
+            <span>المحاولات العامة: <span id="att-royal">3</span></span>
         </div>
         <div style="flex:1; display:flex; justify-content:center; align-items:center; background:#3e0000; padding: 10px;">
             <div class="royal-container">
@@ -171,15 +175,22 @@
     let curRow = 0;
     let lastBombs = [];
 
-    // تهيئة نظام المحاولات لكل الألعاب
-    function initAttempts() {
-        if(!localStorage.getItem('att_apple')) localStorage.setItem('att_apple', 3);
-        if(!localStorage.getItem('att_gems')) localStorage.setItem('att_gems', 3);
-        if(!localStorage.getItem('att_royal')) localStorage.setItem('att_royal', 3);
-        
-        document.getElementById('att-apple').innerText = localStorage.getItem('att_apple');
-        document.getElementById('att-gems').innerText = localStorage.getItem('att_gems');
-        document.getElementById('att-royal').innerText = localStorage.getItem('att_royal');
+    // إدارة المحاولات العامة للمنصة بالكامل
+    function getGlobalAttempts() {
+        let att = localStorage.getItem('global_attempts');
+        if (att === null) {
+            att = 3;
+            localStorage.setItem('global_attempts', att);
+        }
+        return parseInt(att);
+    }
+
+    function updateAttemptsDisplay() {
+        let current = getGlobalAttempts();
+        if(document.getElementById('global-attempts-lobby')) document.getElementById('global-attempts-lobby').innerText = current;
+        if(document.getElementById('att-apple')) document.getElementById('att-apple').innerText = current;
+        if(document.getElementById('att-gems')) document.getElementById('att-gems').innerText = current;
+        if(document.getElementById('att-royal')) document.getElementById('att-royal').innerText = current;
     }
 
     function checkPass() { 
@@ -230,7 +241,7 @@
         setTimeout(() => {
             loadScreen.style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            initAttempts();
+            updateAttemptsDisplay();
         }, 4200);
     }
 
@@ -244,17 +255,15 @@
         document.getElementById('main-container').style.display = 'flex';
         
         document.querySelectorAll('.game-section').forEach(sec => sec.style.display = 'none');
+        updateAttemptsDisplay();
         
         if(gameName === 'apple') {
             document.getElementById('game-apple').style.display = 'flex';
-            document.getElementById('att-apple').innerText = localStorage.getItem('att_apple');
         } else if(gameName === 'gems') {
             document.getElementById('game-gems').style.display = 'flex';
-            document.getElementById('att-gems').innerText = localStorage.getItem('att_gems');
             renderGemsGrid();
         } else if(gameName === 'royal') {
             document.getElementById('game-royal').style.display = 'flex';
-            document.getElementById('att-royal').innerText = localStorage.getItem('att_royal');
             initRoyalGame();
         }
     }
@@ -262,15 +271,24 @@
     function returnToLobby() {
         document.getElementById('main-container').style.display = 'none';
         document.getElementById('lobby-screen').style.display = 'flex';
+        updateAttemptsDisplay();
+    }
+
+    // دالة عامة لخصم محاولة
+    function consumeAttempt() {
+        let att = getGlobalAttempts();
+        if (att <= 0) return false;
+        localStorage.setItem('global_attempts', att - 1);
+        updateAttemptsDisplay();
+        return true;
     }
 
     // دوال لعبة التفاحة (Apple)
     function startGameApple() {
-        let atts = parseInt(localStorage.getItem('att_apple')) || 0;
-        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
+        let atts = getGlobalAttempts();
+        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
         
-        localStorage.setItem('att_apple', atts - 1);
-        document.getElementById('att-apple').innerText = atts - 1;
+        if (!consumeAttempt()) return;
         
         const board = document.getElementById('game-board-apple');
         board.innerHTML = '';
@@ -325,11 +343,10 @@
     }
 
     function renderGemsGrid() {
-        let atts = parseInt(localStorage.getItem('att_gems')) || 0;
-        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
+        let atts = getGlobalAttempts();
+        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
         
-        localStorage.setItem('att_gems', atts - 1);
-        document.getElementById('att-gems').innerText = atts - 1;
+        if (!consumeAttempt()) return;
 
         const grid = document.getElementById('gameGridGems');
         grid.innerHTML = "";
@@ -360,24 +377,22 @@
         }
     }
 
-    // دوال لعبة Royal Feast (عشوائية 15 طعام و 10 سموم)
+    // دوال لعبة Royal Feast (عشوائية ومقيدة بالمحاولات العامة)
     const foodItems = ["🍗", "🥩", "🍰", "🍰", "🫓", "🍕", "🍰", "🍗", "🍕", "🫓", "🍰", "🍕", "🫓", "🥩", "🥩"];
     const royalMults = [1.21, 1.53, 1.96, 2.53, 3.33, 4.45, 6, 8.3, 11.8, 17.16, 25.74, 40, 65, 110, 200];
     let royalStep = 0;
 
     function initRoyalGame() {
-        let atts = parseInt(localStorage.getItem('att_royal')) || 0;
-        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
+        let atts = getGlobalAttempts();
+        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
         
-        localStorage.setItem('att_royal', atts - 1);
-        document.getElementById('att-royal').innerText = atts - 1;
+        if (!consumeAttempt()) return;
 
         royalStep = 0;
         document.getElementById('multiplier').innerText = "المضاعف: 1.00";
         const board = document.getElementById('game-board-royal');
         board.innerHTML = "";
         
-        // خلط عشوائي لـ 15 طعام و 10 سموم (المجموع 25 خانة)
         let randomizedLayout = [...foodItems];
         for(let i=0; i<10; i++) randomizedLayout.push("☠️");
         randomizedLayout.sort(() => Math.random() - 0.5);
