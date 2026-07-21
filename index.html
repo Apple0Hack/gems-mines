@@ -19,10 +19,8 @@
         .login-box { background: #161b22; padding: 25px; border-radius: 20px; border: 2px solid var(--accent-gold); text-align: center; width: 90%; max-width: 350px; position: relative; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: var(--accent-gold); text-align: center; font-size: 1rem; }
         
-        /* رقم الإصدار التجموي */
         .version-tag { position: absolute; bottom: 8px; left: 0; right: 0; font-size: 0.75rem; color: #555; text-align: center; letter-spacing: 1px; }
 
-        /* شاشة التحميل والاتصال بالسيرفر */
         .loading-box { text-align: center; width: 85%; max-width: 320px; }
         .loading-text { font-size: 1.1rem; margin-bottom: 20px; color: #ddd; font-weight: bold; min-height: 30px; }
         .neon-bar-container { width: 100%; height: 8px; background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #333; box-shadow: 0 0 10px rgba(0,255,102,0.2); }
@@ -35,7 +33,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* شاشة اختيار الألعاب */
         .games-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-top: 15px; }
         .game-card { background: #21262d; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
         .game-card:hover { border-color: var(--accent-gold); background: #30363d; }
@@ -51,7 +48,7 @@
         .brick { height: 45px; background: #2a2f3a; border-radius: 8px; border: 1px solid #444; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; transition: 0.3s; }
         
         /* أسلوب لعبة Gems & Mines */
-        .gems-container { background: rgba(0, 10, 25, 0.98); border: 2px solid var(--gold); padding: 25px 15px; border-radius: 30px; text-align: center; width: 340px; margin: auto; box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+        .gems-container { background: rgba(0, 10, 25, 0.98); border: 2px solid var(--accent-gold); padding: 25px 15px; border-radius: 30px; text-align: center; width: 340px; margin: auto; box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
         .grid-gems { display: grid; grid-template-columns: repeat(5, 52px); gap: 8px; justify-content: center; margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 15px; }
         .cell-gem { width: 52px; height: 52px; background: #0a1a2a; border: 1px solid #1a3a5a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; transition: 0.3s; }
 
@@ -88,7 +85,7 @@
     </div>
 </div>
 
-<!-- شاشة الاتصال بالسيرفر التمويهية (بين الـ ID والـ Lobby) -->
+<!-- شاشة الاتصال بالسيرفر التمويهية -->
 <div id="loading-screen" class="overlay" style="display:none">
     <div class="loading-box">
         <div id="success-icon" class="success-check">✔</div>
@@ -122,7 +119,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة التفاحة 🍎</span>
-            <span>المحاولات: <span id="att-count">3</span></span>
+            <span>المحاولات: <span id="att-apple">3</span></span>
         </div>
         <div id="game-board-apple"></div>
         <div class="controls">
@@ -136,6 +133,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة Gems & Mines 💎</span>
+            <span>المحاولات: <span id="att-gems">3</span></span>
         </div>
         <div style="flex:1; display:flex; justify-content:center; align-items:center;">
             <div class="gems-container">
@@ -154,6 +152,7 @@
         <div class="header">
             <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
             <span>لعبة Royal Feast 🍗</span>
+            <span>المحاولات: <span id="att-royal">3</span></span>
         </div>
         <div style="flex:1; display:flex; justify-content:center; align-items:center; background:#3e0000; padding: 10px;">
             <div class="royal-container">
@@ -172,6 +171,17 @@
     let curRow = 0;
     let lastBombs = [];
 
+    // تهيئة نظام المحاولات لكل الألعاب
+    function initAttempts() {
+        if(!localStorage.getItem('att_apple')) localStorage.setItem('att_apple', 3);
+        if(!localStorage.getItem('att_gems')) localStorage.setItem('att_gems', 3);
+        if(!localStorage.getItem('att_royal')) localStorage.setItem('att_royal', 3);
+        
+        document.getElementById('att-apple').innerText = localStorage.getItem('att_apple');
+        document.getElementById('att-gems').innerText = localStorage.getItem('att_gems');
+        document.getElementById('att-royal').innerText = localStorage.getItem('att_royal');
+    }
+
     function checkPass() { 
         if (document.getElementById('pass-input').value.trim() === P1 || document.getElementById('pass-input').value.trim() === "448875") { 
             document.getElementById('pass-screen').style.display = 'none'; 
@@ -184,13 +194,12 @@
     function checkID() { 
         if (P2.includes(document.getElementById('id-input').value.trim())) { 
             document.getElementById('id-screen').style.display = 'none'; 
-            startServerConnection(); // تشغيل شاشة الاتصال الوهمية
+            startServerConnection(); 
         } else { 
             alert("هذا الـ ID غير مسجل!"); 
         } 
     }
 
-    // دالة محاكاة الاتصال بالسيرفر مع شريط النيون الأخضر (تستغرق ~3.5 ثانية)
     function startServerConnection() {
         const loadScreen = document.getElementById('loading-screen');
         const progressBar = document.getElementById('neon-progress');
@@ -202,29 +211,26 @@
         successIcon.style.display = 'none';
         loadMsg.innerText = "جاري الاتصال بالسيرفر الآمن...";
 
-        // خطوة 1: فحص البيانات
         setTimeout(() => {
             progressBar.style.width = '40%';
             loadMsg.innerText = "جاري المصادقة والتحقق من الـ ID...";
         }, 1000);
 
-        // خطوة 2: مزامنة الخوادم
         setTimeout(() => {
             progressBar.style.width = '80%';
             loadMsg.innerText = "جاري جلب خوارزميات التوقع...";
         }, 2200);
 
-        // خطوة 3: النجاح والاعتماد
         setTimeout(() => {
             progressBar.style.width = '100%';
             loadMsg.innerText = "تم الاتصال بنجاح!";
             successIcon.style.display = 'block';
         }, 3300);
 
-        // الانتقال لبيئة الألعاب (Lobby) بعد اكتمال الوقت
         setTimeout(() => {
             loadScreen.style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
+            initAttempts();
         }, 4200);
     }
 
@@ -241,12 +247,14 @@
         
         if(gameName === 'apple') {
             document.getElementById('game-apple').style.display = 'flex';
-            resetAtts();
+            document.getElementById('att-apple').innerText = localStorage.getItem('att_apple');
         } else if(gameName === 'gems') {
             document.getElementById('game-gems').style.display = 'flex';
+            document.getElementById('att-gems').innerText = localStorage.getItem('att_gems');
             renderGemsGrid();
         } else if(gameName === 'royal') {
             document.getElementById('game-royal').style.display = 'flex';
+            document.getElementById('att-royal').innerText = localStorage.getItem('att_royal');
             initRoyalGame();
         }
     }
@@ -257,19 +265,12 @@
     }
 
     // دوال لعبة التفاحة (Apple)
-    function resetAtts() {
-        if(!localStorage.getItem('app_v6')) {
-            localStorage.setItem('app_v6', 3);
-        }
-        document.getElementById('att-count').innerText = localStorage.getItem('app_v6');
-    }
-
     function startGameApple() {
-        let atts = parseInt(localStorage.getItem('app_v6')) || 3;
-        if (atts <= 0) { alert("انتهت المحاولات! جاري التجديد..."); resetAtts(); return; }
+        let atts = parseInt(localStorage.getItem('att_apple')) || 0;
+        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
         
-        localStorage.setItem('app_v6', atts - 1);
-        document.getElementById('att-count').innerText = atts - 1;
+        localStorage.setItem('att_apple', atts - 1);
+        document.getElementById('att-apple').innerText = atts - 1;
         
         const board = document.getElementById('game-board-apple');
         board.innerHTML = '';
@@ -309,7 +310,7 @@
         }); 
     }
 
-    // دوال لعبة الكريستالة (Gems & Mines)
+    // دوال لعبة Gems & Mines
     function generateSmartBombs() {
         let bombs = [];
         if (lastBombs.length > 0 && Math.random() < 0.5) {
@@ -324,6 +325,12 @@
     }
 
     function renderGemsGrid() {
+        let atts = parseInt(localStorage.getItem('att_gems')) || 0;
+        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
+        
+        localStorage.setItem('att_gems', atts - 1);
+        document.getElementById('att-gems').innerText = atts - 1;
+
         const grid = document.getElementById('gameGridGems');
         grid.innerHTML = "";
         document.getElementById('gems-count').innerText = "0";
@@ -353,20 +360,31 @@
         }
     }
 
-    // دوال لعبة Royal Feast
-    const royalLayout = ["🍗", "🥩", "☠️", "☠️", "🍰", "🍰", "🫓", "🍕", "☠️", "☠️", "🍰", "☠️", "🍗", "🍕", "🫓", "🍰", "☠️", "🍕", "☠️", "🫓", "🥩", "☠️", "☠️", "🥩", "☠️"];
+    // دوال لعبة Royal Feast (عشوائية 15 طعام و 10 سموم)
+    const foodItems = ["🍗", "🥩", "🍰", "🍰", "🫓", "🍕", "🍰", "🍗", "🍕", "🫓", "🍰", "🍕", "🫓", "🥩", "🥩"];
     const royalMults = [1.21, 1.53, 1.96, 2.53, 3.33, 4.45, 6, 8.3, 11.8, 17.16, 25.74, 40, 65, 110, 200];
     let royalStep = 0;
 
     function initRoyalGame() {
+        let atts = parseInt(localStorage.getItem('att_royal')) || 0;
+        if (atts <= 0) { alert("انتهت محاولات هذه اللعبة!"); return; }
+        
+        localStorage.setItem('att_royal', atts - 1);
+        document.getElementById('att-royal').innerText = atts - 1;
+
         royalStep = 0;
         document.getElementById('multiplier').innerText = "المضاعف: 1.00";
         const board = document.getElementById('game-board-royal');
         board.innerHTML = "";
         
-        royalLayout.forEach(item => {
+        // خلط عشوائي لـ 15 طعام و 10 سموم (المجموع 25 خانة)
+        let randomizedLayout = [...foodItems];
+        for(let i=0; i<10; i++) randomizedLayout.push("☠️");
+        randomizedLayout.sort(() => Math.random() - 0.5);
+
+        randomizedLayout.forEach(item => {
             const div = document.createElement('div');
-            div.className, div.className = 'cell-royal';
+            div.className = 'cell-royal';
             div.onclick = () => {
                 if(div.classList.contains('revealed')) return;
                 div.classList.add('revealed');
