@@ -3,229 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💥 BATTLEZONE MOBILE: ABSOLUTE FIXED</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>APPLE HACK VIP 🍎</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #090d16; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; }
-        canvas { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
-        .hidden { display: none !important; }
+        :root {
+            --bg-color: #0b0e14;
+            --accent-gold: #ffcc00;
+            --win-green: #2ecc71;
+            --bomb-red: #e74c3c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .overlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-box { background: #161b22; padding: 25px; border-radius: 20px; border: 2px solid var(--accent-gold); text-align: center; width: 90%; max-width: 350px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: var(--accent-gold); text-align: center; }
+        
+        .header { padding: 15px; background: #161b22; text-align: center; border-bottom: 2px solid var(--accent-gold); font-size: 1.2rem; }
+        #game-board { flex: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 6px; padding: 10px; align-items: center; }
+        
+        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; opacity: 0.3; pointer-events: none; width: 100%; max-width: 300px; }
+        .row.active { opacity: 1; pointer-events: auto; }
+        .brick { height: 45px; background: #2a2f3a; border-radius: 8px; border: 1px solid #444; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; transition: 0.3s; }
+        
+        .controls { padding: 15px; background: #161b22; border-top: 2px solid #333; display: flex; gap: 10px; }
+        .btn-3d { padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; color: #000; flex: 1; }
     </style>
 </head>
-<body class="relative flex items-center justify-center">
+<body>
 
-    <div id="setup-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 p-4">
-        <div class="bg-slate-900 border-2 border-red-500 rounded-2xl p-5 max-w-xs w-full text-center">
-            <h2 class="text-lg font-black text-red-500 mb-3">BATTLEZONE MOBILE V4</h2>
-            <input type="text" id="passwordInput" value="125588" class="w-full p-2 mb-3 rounded-lg bg-slate-800 text-center font-bold text-red-400 outline-none text-xs"/>
-            <select id="map-select" class="w-full p-2 mb-3 rounded-lg bg-slate-800 font-bold text-xs text-amber-400 outline-none">
-                <option value="hotel">🏨 الفندق الفاخر</option>
-                <option value="building">🏢 المبنى السكني</option>
-                <option value="arena">🏜️ الساحة المفتوحة</option>
-            </select>
-            <select id="diff-select" class="w-full p-2 mb-4 rounded-lg bg-slate-800 font-bold text-xs text-red-400 outline-none">
-                <option value="medium">💀 مستوى متوسط</option>
-                <option value="hard">☣️ مستوى محترف</option>
-            </select>
-            <button onclick="startBattle()" class="w-full bg-red-600 text-white p-2.5 rounded-lg font-black text-sm">ابدأ القتال فوراً 💥</button>
-        </div>
+<div id="pass-screen" class="overlay"><div class="login-box"><h2>CORE ACCESS 🔐</h2><input type="text" id="pass-input" placeholder="كلمة المرور"><button class="btn-3d" style="background:var(--accent-gold)" onclick="checkPass()">دخول</button></div></div>
+<div id="id-screen" class="overlay" style="display:none"><div class="login-box"><h2>ID LOGIN 🆔</h2><input type="text" id="id-input" placeholder="أدخل الـ ID"><button class="btn-3d" style="background:var(--accent-gold)" onclick="checkID()">تنشيط</button></div></div>
+
+<div id="main-game" style="display:none; flex-direction:column; height:100%">
+    <div class="header">المحاولات: <span id="att-count">3</span></div>
+    <div id="game-board"></div>
+    <div class="controls">
+        <button class="btn-3d" style="background:#7f8c8d; color:#fff" onclick="resetRow()">تراجع</button>
+        <button class="btn-3d" id="start-btn" style="background:var(--accent-gold)" onclick="startGame()">جولة جديدة</button>
     </div>
+</div>
 
-    <canvas id="gameCanvas" class="hidden"></canvas>
+<script>
+    const P1 = "807055";
+    const P2 = ["1726589495", "1724497207", "1307926957", "1706821579", "120240", "1501217291", "20040077", "1690313259", "1690313233", "1690368207", "1690372939", "1698887019", "1698897963", "1699764383", "1726020325"];
+    let curRow = 0;
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+    function checkPass() { if (document.getElementById('pass-input').value.trim() === P1) { document.getElementById('pass-screen').style.display = 'none'; document.getElementById('id-screen').style.display = 'flex'; } else { alert("كلمة المرور غير صحيحة!"); } }
+    
+    function checkID() { 
+        if (P2.includes(document.getElementById('id-input').value.trim())) { 
+            document.getElementById('id-screen').style.display = 'none'; 
+            document.getElementById('main-game').style.display = 'flex'; 
+            resetAtts(); 
+        } else { 
+            alert("هذا الـ ID غير مسجل!"); 
+        } 
+    }
 
-        const weaponsConfig = {
-            m4: { name: 'M4 الرشاش', speed: 12, damage: 10, fireRate: 150, color: '#fbbf24', size: 3, spread: false },
-            shotgun: { name: 'شوتجن مدمر', speed: 9, damage: 25, fireRate: 600, color: '#f97316', size: 4, spread: true },
-            sniper: { name: 'قناص بلاتيني', speed: 25, damage: 60, fireRate: 1100, color: '#06b6d4', size: 5, spread: false }
-        };
+    function resetAtts() {
+        localStorage.setItem('app_v6', 3);
+        document.getElementById('att-count').innerText = 3;
+    }
 
-        let player = { x: 100, y: 150, hp: 100, maxHp: 100, speed: 4, r: 14, color: '#3b82f6', weapon: 'm4', lastShot: 0, angle: 0 };
-        let bots = []; let bullets = []; let walls = [];
-        let botDifficulty = 'medium'; let isGameRunning = false;
-
-        let controls = {
-            joy: { x: 0, y: 0, r: 55, knobX: 0, knobY: 0, knobR: 24, touchId: null, active: false },
-            fire: { x: 0, y: 0, r: 45, active: false, touchId: null },
-            weaponBtn: { x: 0, y: 0, w: 100, h: 35 }
-        };
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            controls.joy.x = 80; controls.joy.y = canvas.height - 80;
-            controls.joy.knobX = controls.joy.x; controls.joy.knobY = controls.joy.y;
-            controls.fire.x = canvas.width - 80; controls.fire.y = canvas.height - 80;
-            controls.weaponBtn.x = canvas.width / 2 - 50; controls.weaponBtn.y = 15;
-            if(isGameRunning) buildMapWalls(document.getElementById('map-select').value);
-        }
-
-        function startBattle() {
-            if (document.getElementById('passwordInput').value.trim() !== '125588') return;
-            botDifficulty = document.getElementById('diff-select').value;
-            document.getElementById('setup-screen').classList.add('hidden');
-            canvas.classList.remove('hidden');
-            isGameRunning = true;
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            buildMapWalls(document.getElementById('map-select').value);
-            spawnBots();
-            setupDirectTouch();
-            requestAnimationFrame(battleLoop);
-        }
-
-        function buildMapWalls(type) {
-            walls = [
-                { x: 0, y: 0, w: canvas.width, h: 10 }, { x: 0, y: canvas.height-10, w: canvas.width, h: 10 },
-                { x: 0, y: 0, w: 10, h: canvas.height }, { x: canvas.width-10, y: 0, w: 10, h: canvas.height }
-            ];
-            if (type === 'building') {
-                walls.push({ x: canvas.width*0.3, y: 10, w: 20, h: canvas.height*0.4 }, { x: canvas.width*0.6, y: canvas.height*0.5, w: 20, h: canvas.height*0.4 });
-            } else {
-                walls.push({ x: canvas.width*0.4, y: canvas.height*0.3, w: canvas.width*0.2, h: 30 });
+    function startGame() {
+        let atts = parseInt(localStorage.getItem('app_v6')) || 3;
+        if (atts <= 0) { alert("انتهت المحاولات! جاري التجديد..."); resetAtts(); return; }
+        
+        localStorage.setItem('app_v6', atts - 1);
+        document.getElementById('att-count').innerText = atts - 1;
+        
+        const board = document.getElementById('game-board');
+        board.innerHTML = '';
+        curRow = 0;
+        
+        for (let i = 0; i < 10; i++) {
+            const rDiv = document.createElement('div');
+            rDiv.className = 'row' + (i === 0 ? ' active' : '');
+            rDiv.id = 'r' + i;
+            let bombs = [0,1,2,3,4].sort(() => Math.random() - 0.5).slice(0, i < 4 ? 1 : 2);
+            for (let j = 0; j < 5; j++) {
+                const b = document.createElement('div');
+                b.className = 'brick';
+                b.onclick = () => { 
+                    if (i !== curRow) return;
+                    if (bombs.includes(j)) {
+                        b.style.background = '#e74c3c'; 
+                        b.innerText = '💣'; 
+                    } else {
+                        b.style.background = '#2ecc71'; 
+                        b.innerText = '🍎';
+                        document.getElementById('r'+curRow).classList.remove('active');
+                        curRow++;
+                        if(document.getElementById('r'+curRow)) document.getElementById('r'+curRow).classList.add('active');
+                    }
+                };
+                rDiv.appendChild(b);
             }
+            board.appendChild(rDiv);
         }
-
-        function spawnBots() {
-            bots = [
-                { x: canvas.width * 0.8, y: canvas.height * 0.3, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.5 : 1.5, r: 13, lastShot: 0, vx: 1, vy: 1 },
-                { x: canvas.width * 0.7, y: canvas.height * 0.7, hp: 80, maxHp: 80, color: '#ef4444', speed: botDifficulty === 'hard' ? 2.5 : 1.5, r: 13, lastShot: 0, vx: -1, vy: 1 }
-            ];
-        }
-
-        function setupDirectTouch() {
-            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-            canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-        }
-
-        function handleTouchStart(e) {
-            e.preventDefault();
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                const t = e.changedTouches[i];
-                let distJoy = Math.sqrt((t.clientX - controls.joy.x)**2 + (t.clientY - controls.joy.y)**2);
-                if (distJoy < controls.joy.r + 20 && controls.joy.touchId === null) {
-                    controls.joy.touchId = t.identifier; controls.joy.active = true; updateJoystickKnob(t.clientX, t.clientY);
-                }
-                let distFire = Math.sqrt((t.clientX - controls.fire.x)**2 + (t.clientY - controls.fire.y)**2);
-                if (distFire < controls.fire.r + 20 && controls.fire.touchId === null) {
-                    controls.fire.touchId = t.identifier; controls.fire.active = true;
-                }
-                if (t.clientX > controls.weaponBtn.x && t.clientX < controls.weaponBtn.x + controls.weaponBtn.w && t.clientY > controls.weaponBtn.y && t.clientY < controls.weaponBtn.y + controls.weaponBtn.h) {
-                    cycleWeapons();
-                }
-            }
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-            for (let i = 0; i < e.touches.length; i++) {
-                if (e.touches[i].identifier === controls.joy.touchId) updateJoystickKnob(e.touches[i].clientX, e.touches[i].clientY);
-            }
-        }
-
-        function handleTouchEnd(e) {
-            e.preventDefault();
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === controls.joy.touchId) {
-                    controls.joy.touchId = null; controls.joy.active = false; controls.joy.knobX = controls.joy.x; controls.joy.knobY = controls.joy.y;
-                }
-                if (e.changedTouches[i].identifier === controls.fire.touchId) {
-                    controls.fire.touchId = null; controls.fire.active = false;
-                }
-            }
-        }
-
-        function updateJoystickKnob(tx, ty) {
-            let dx = tx - controls.joy.x; let dy = ty - controls.joy.y;
-            let dist = Math.sqrt(dx*dx + dy*dy); let maxDist = controls.joy.r - 15;
-            if (dist > maxDist) { dx = (dx / dist) * maxDist; dy = (dy / dist) * maxDist; }
-            controls.joy.knobX = controls.joy.x + dx; controls.joy.knobY = controls.joy.y + dy;
-            player.angle = Math.atan2(dy, dx);
-        }
-
-        function cycleWeapons() {
-            const wkeys = Object.keys(weaponsConfig);
-            player.weapon = wkeys[(wkeys.indexOf(player.weapon) + 1) % wkeys.length];
-        }
-
-        function battleLoop() {
-            if (!isGameRunning) return;
-            updateGameLogic();
-            renderGameGraphics();
-            requestAnimationFrame(battleLoop);
-        }
-
-        function updateGameLogic() {
-            if (controls.joy.active) {
-                moveEntity(player, (controls.joy.knobX - controls.joy.x)/(controls.joy.r-15)*player.speed, (controls.joy.knobY - controls.joy.y)/(controls.joy.r-15)*player.speed);
-            }
-            if (controls.fire.active) {
-                const now = Date.now();
-                if (now - player.lastShot >= weaponsConfig[player.weapon].fireRate) {
-                    player.lastShot = now;
-                    bullets.push({ x: player.x, y: player.y, angle: player.angle, ...weaponsConfig[player.weapon], owner: 'player' });
-                }
-            }
-            bots.forEach(bot => {
-                let d = Math.sqrt((player.x - bot.x)**2 + (player.y - bot.y)**2);
-                bot.angle = Math.atan2(player.y - bot.y, player.x - bot.x);
-                if (botDifficulty === 'hard') moveEntity(bot, (player.x - bot.x)/d * bot.speed, (player.y - bot.y)/d * bot.speed);
-                if (d < 200 && Date.now() - bot.lastShot > 1000) {
-                    bullets.push({ x: bot.x, y: bot.y, angle: bot.angle, speed: 7, damage: 8, color: '#f43f5e', size: 3, owner: 'bot' });
-                    bot.lastShot = Date.now();
-                }
-            });
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                let b = bullets[i];
-                b.x += Math.cos(b.angle) * b.speed; b.y += Math.sin(b.angle) * b.speed;
-                if (b.owner === 'bot' && Math.sqrt((b.x - player.x)**2 + (b.y - player.y)**2) < player.r) {
-                    player.hp -= b.damage; bullets.splice(i, 1); if(player.hp <= 0) endGame(false);
-                } else if (b.owner === 'player') {
-                    bots.forEach((bot, j) => {
-                        if (Math.sqrt((b.x - bot.x)**2 + (b.y - bot.y)**2) < bot.r) {
-                            bot.hp -= b.damage; bullets.splice(i, 1); if(bot.hp <= 0) bots.splice(j, 1);
-                        }
-                    });
-                }
-            }
-            if(bots.length === 0) endGame(true);
-        }
-
-        function moveEntity(e, vx, vy) {
-            e.x += vx; e.y += vy;
-        }
-
-        function renderGameGraphics() {
-            ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            walls.forEach(w => { ctx.fillStyle = '#475569'; ctx.fillRect(w.x, w.y, w.w, w.h); });
-            bullets.forEach(b => { ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.fill(); });
-            drawCharacter(player);
-            bots.forEach(drawCharacter);
-            drawCanvasUI();
-        }
-
-        function drawCharacter(c) {
-            ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.angle);
-            ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(0, 0, c.r, 0, Math.PI*2); ctx.fill();
-            ctx.restore();
-        }
-
-        function drawCanvasUI() {
-            ctx.beginPath(); ctx.arc(controls.joy.x, controls.joy.y, controls.joy.r, 0, Math.PI*2);
-            ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fill();
-            ctx.beginPath(); ctx.arc(controls.joy.knobX, controls.joy.knobY, controls.joy.knobR, 0, Math.PI*2);
-            ctx.fillStyle = '#ef4444'; ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.fillText(`الصحة: ${player.hp}`, 20, 30);
-        }
-
-        function endGame(win) {
-            isGameRunning = false;
-            alert(win ? 'كفو!' : 'خسرت!');
-            location.reload();
-        }
-    </script>
+    }
+    function resetRow() { 
+        document.querySelectorAll('#r' + curRow + ' .brick').forEach(b => { 
+            b.style.background = '#2a2f3a'; 
+            b.innerText = ''; 
+        }); 
+    }
+</script>
 </body>
 </html>
