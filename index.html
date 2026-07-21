@@ -11,13 +11,30 @@
             --win-green: #2ecc71;
             --bomb-red: #e74c3c;
             --blue: #00d4ff;
+            --neon-green: #00ff66;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        .overlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background: #161b22; padding: 25px; border-radius: 20px; border: 2px solid var(--accent-gold); text-align: center; width: 90%; max-width: 350px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: var(--accent-gold); text-align: center; }
+        .overlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 2000; flex-direction: column; }
+        .login-box { background: #161b22; padding: 25px; border-radius: 20px; border: 2px solid var(--accent-gold); text-align: center; width: 90%; max-width: 350px; position: relative; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: var(--accent-gold); text-align: center; font-size: 1rem; }
         
+        /* رقم الإصدار التجموي */
+        .version-tag { position: absolute; bottom: 8px; left: 0; right: 0; font-size: 0.75rem; color: #555; text-align: center; letter-spacing: 1px; }
+
+        /* شاشة التحميل والاتصال بالسيرفر */
+        .loading-box { text-align: center; width: 85%; max-width: 320px; }
+        .loading-text { font-size: 1.1rem; margin-bottom: 20px; color: #ddd; font-weight: bold; min-height: 30px; }
+        .neon-bar-container { width: 100%; height: 8px; background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #333; box-shadow: 0 0 10px rgba(0,255,102,0.2); }
+        .neon-bar { width: 0%; height: 100%; background: var(--neon-green); box-shadow: 0 0 12px var(--neon-green); transition: width 0.3s ease; }
+        .success-check { font-size: 3.5rem; color: var(--neon-green); margin-bottom: 15px; display: none; animation: popIn 0.4s ease; }
+        
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         /* شاشة اختيار الألعاب */
         .games-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-top: 15px; }
         .game-card { background: #21262d; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
@@ -56,7 +73,8 @@
     <div class="login-box">
         <h2>CORE ACCESS 🔐</h2>
         <input type="text" id="pass-input" placeholder="كلمة المرور">
-        <button class="btn-3d" style="background:var(--accent-gold)" onclick="checkPass()">دخول</button>
+        <button class="btn-3d" style="background:var(--accent-gold); margin-top: 10px;" onclick="checkPass()">دخول</button>
+        <div class="version-tag">SYSTEM v6.4.2 [SECURE]</div>
     </div>
 </div>
 
@@ -65,8 +83,21 @@
     <div class="login-box">
         <h2>ID LOGIN 🆔</h2>
         <input type="text" id="id-input" placeholder="أدخل الـ ID">
-        <button class="btn-3d" style="background:var(--accent-gold)" onclick="checkID()">تنشيط</button>
+        <button class="btn-3d" style="background:var(--accent-gold); margin-top: 10px;" onclick="checkID()">تنشيط</button>
+        <div class="version-tag">CLIENT AUTH v6.4.2</div>
     </div>
+</div>
+
+<!-- شاشة الاتصال بالسيرفر التمويهية (بين الـ ID والـ Lobby) -->
+<div id="loading-screen" class="overlay" style="display:none">
+    <div class="loading-box">
+        <div id="success-icon" class="success-check">✔</div>
+        <div id="loading-msg" class="loading-text">جاري الاتصال بالسيرفر الآمن...</div>
+        <div class="neon-bar-container">
+            <div id="neon-progress" class="neon-bar"></div>
+        </div>
+    </div>
+    <div class="version-tag" style="bottom: 30px;">ENCRYPTED CONNECTION 256-BIT</div>
 </div>
 
 <!-- شاشة اختيار الألعاب (Lobby) -->
@@ -79,6 +110,7 @@
             <div class="game-card" onclick="openGame('gems')"><span>💎</span> Gems & Mines</div>
             <div class="game-card" onclick="openGame('royal')"><span>🍗</span> Royal Feast</div>
         </div>
+        <div class="version-tag">MULTI-GAME LOBBY v6.4</div>
     </div>
 </div>
 
@@ -152,17 +184,54 @@
     function checkID() { 
         if (P2.includes(document.getElementById('id-input').value.trim())) { 
             document.getElementById('id-screen').style.display = 'none'; 
-            document.getElementById('lobby-screen').style.display = 'flex'; 
+            startServerConnection(); // تشغيل شاشة الاتصال الوهمية
         } else { 
             alert("هذا الـ ID غير مسجل!"); 
         } 
     }
 
+    // دالة محاكاة الاتصال بالسيرفر مع شريط النيون الأخضر (تستغرق ~3.5 ثانية)
+    function startServerConnection() {
+        const loadScreen = document.getElementById('loading-screen');
+        const progressBar = document.getElementById('neon-progress');
+        const loadMsg = document.getElementById('loading-msg');
+        const successIcon = document.getElementById('success-icon');
+        
+        loadScreen.style.display = 'flex';
+        progressBar.style.width = '0%';
+        successIcon.style.display = 'none';
+        loadMsg.innerText = "جاري الاتصال بالسيرفر الآمن...";
+
+        // خطوة 1: فحص البيانات
+        setTimeout(() => {
+            progressBar.style.width = '40%';
+            loadMsg.innerText = "جاري المصادقة والتحقق من الـ ID...";
+        }, 1000);
+
+        // خطوة 2: مزامنة الخوادم
+        setTimeout(() => {
+            progressBar.style.width = '80%';
+            loadMsg.innerText = "جاري جلب خوارزميات التوقع...";
+        }, 2200);
+
+        // خطوة 3: النجاح والاعتماد
+        setTimeout(() => {
+            progressBar.style.width = '100%';
+            loadMsg.innerText = "تم الاتصال بنجاح!";
+            successIcon.style.display = 'block';
+        }, 3300);
+
+        // الانتقال لبيئة الألعاب (Lobby) بعد اكتمال الوقت
+        setTimeout(() => {
+            loadScreen.style.display = 'none';
+            document.getElementById('lobby-screen').style.display = 'flex';
+        }, 4200);
+    }
+
     function openGame(gameName) {
-        // إذا اختار المستخدم لعبة الـ Crash (الطيارة)
         if(gameName === 'crash') {
             alert("هذه اللعبة غير متوفرة حالياً ✈️");
-            return; // إيقاف التنفيذ وعدم فتح أي شاشة
+            return;
         }
 
         document.getElementById('lobby-screen').style.display = 'none';
@@ -297,7 +366,7 @@
         
         royalLayout.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'cell-royal';
+            div.className, div.className = 'cell-royal';
             div.onclick = () => {
                 if(div.classList.contains('revealed')) return;
                 div.classList.add('revealed');
