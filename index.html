@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>APPLE HACK VIP 🍎</title>
+    <title>MULTI-GAMES VIP 🎮</title>
     <style>
         :root {
             --bg-color: #0b0e14;
             --accent-gold: #ffcc00;
             --win-green: #2ecc71;
             --bomb-red: #e74c3c;
+            --blue: #00d4ff;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -17,61 +18,188 @@
         .login-box { background: #161b22; padding: 25px; border-radius: 20px; border: 2px solid var(--accent-gold); text-align: center; width: 90%; max-width: 350px; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: var(--accent-gold); text-align: center; }
         
-        .header { padding: 15px; background: #161b22; text-align: center; border-bottom: 2px solid var(--accent-gold); font-size: 1.2rem; }
-        #game-board { flex: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 6px; padding: 10px; align-items: center; }
+        /* شاشة اختيار الألعاب */
+        .games-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-top: 15px; }
+        .game-card { background: #21262d; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
+        .game-card:hover { border-color: var(--accent-gold); background: #30363d; }
+        .game-card span { font-size: 1.5rem; }
+
+        .header { padding: 15px; background: #161b22; text-align: center; border-bottom: 2px solid var(--accent-gold); font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: #333; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
         
+        /* أسلوب لعبة التفاحة */
+        #game-board-apple { flex: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 6px; padding: 10px; align-items: center; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; opacity: 0.3; pointer-events: none; width: 100%; max-width: 300px; }
         .row.active { opacity: 1; pointer-events: auto; }
         .brick { height: 45px; background: #2a2f3a; border-radius: 8px; border: 1px solid #444; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; transition: 0.3s; }
         
+        /* أسلوب لعبة Gems & Mines */
+        .gems-container { background: rgba(0, 10, 25, 0.98); border: 2px solid var(--gold); padding: 25px 15px; border-radius: 30px; text-align: center; width: 340px; margin: auto; box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+        .grid-gems { display: grid; grid-template-columns: repeat(5, 52px); gap: 8px; justify-content: center; margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 15px; }
+        .cell-gem { width: 52px; height: 52px; background: #0a1a2a; border: 1px solid #1a3a5a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; transition: 0.3s; }
+
         .controls { padding: 15px; background: #161b22; border-top: 2px solid #333; display: flex; gap: 10px; }
         .btn-3d { padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; color: #000; flex: 1; }
+        .btn-blue { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+        .placeholder-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div id="pass-screen" class="overlay"><div class="login-box"><h2>CORE ACCESS 🔐</h2><input type="text" id="pass-input" placeholder="كلمة المرور"><button class="btn-3d" style="background:var(--accent-gold)" onclick="checkPass()">دخول</button></div></div>
-<div id="id-screen" class="overlay" style="display:none"><div class="login-box"><h2>ID LOGIN 🆔</h2><input type="text" id="id-input" placeholder="أدخل الـ ID"><button class="btn-3d" style="background:var(--accent-gold)" onclick="checkID()">تنشيط</button></div></div>
-
-<div id="main-game" style="display:none; flex-direction:column; height:100%">
-    <div class="header">المحاولات: <span id="att-count">3</span></div>
-    <div id="game-board"></div>
-    <div class="controls">
-        <button class="btn-3d" style="background:#7f8c8d; color:#fff" onclick="resetRow()">تراجع</button>
-        <button class="btn-3d" id="start-btn" style="background:var(--accent-gold)" onclick="startGame()">جولة جديدة</button>
+<!-- شاشة الباسورد -->
+<div id="pass-screen" class="overlay">
+    <div class="login-box">
+        <h2>CORE ACCESS 🔐</h2>
+        <input type="text" id="pass-input" placeholder="كلمة المرور">
+        <button class="btn-3d" style="background:var(--accent-gold)" onclick="checkPass()">دخول</button>
     </div>
+</div>
+
+<!-- شاشة الـ ID -->
+<div id="id-screen" class="overlay" style="display:none">
+    <div class="login-box">
+        <h2>ID LOGIN 🆔</h2>
+        <input type="text" id="id-input" placeholder="أدخل الـ ID">
+        <button class="btn-3d" style="background:var(--accent-gold)" onclick="checkID()">تنشيط</button>
+    </div>
+</div>
+
+<!-- شاشة اختيار الألعاب (Lobby) -->
+<div id="lobby-screen" class="overlay" style="display:none">
+    <div class="login-box" style="max-width: 400px;">
+        <h2>اختر اللعبة 🎮</h2>
+        <div class="games-grid">
+            <div class="game-card" onclick="openGame('crash')"><span>✈️</span> Crash</div>
+            <div class="game-card" onclick="openGame('apple')"><span>🍎</span> Apple</div>
+            <div class="game-card" onclick="openGame('gems')"><span>💎</span> Gems & Mines</div>
+            <div class="game-card" onclick="openGame('royal')"><span>🍗</span> Royal Feast</div>
+        </div>
+    </div>
+</div>
+
+<!-- حاوية ألعاب النظام -->
+<div id="main-container" style="display:none; flex-direction:column; height:100%">
+    
+    <!-- 1. لعبة تفاحة (Apple) -->
+    <div id="game-apple" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
+            <span>لعبة التفاحة 🍎</span>
+            <span>المحاولات: <span id="att-count">3</span></span>
+        </div>
+        <div id="game-board-apple"></div>
+        <div class="controls">
+            <button class="btn-3d" style="background:#7f8c8d; color:#fff" onclick="resetRow()">تراجع</button>
+            <button class="btn-3d" id="start-btn" style="background:var(--accent-gold)" onclick="startGameApple()">جولة جديدة</button>
+        </div>
+    </div>
+
+    <!-- 2. لعبة Gems & Mines -->
+    <div id="game-gems" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
+            <span>لعبة Gems & Mines 💎</span>
+        </div>
+        <div style="flex:1; display:flex; justify-content:center; align-items:center;">
+            <div class="gems-container">
+                <div style="font-size: 20px; color: var(--accent-gold); margin-bottom: 15px; font-weight:bold;">RADAR GEMS</div>
+                <div class="grid-gems" id="gameGridGems"></div>
+                <div style="margin: 15px 0; font-size: 14px; color: var(--blue);">
+                    💎: <span id="gems-count">0</span> | 💣: <span id="bombs-count">0</span>
+                </div>
+                <button class="btn-3d btn-blue" onclick="renderGemsGrid()">NEXT ROUND ⟳</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. لعبة Crash (قيد الإعداد) -->
+    <div id="game-crash" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
+            <span>لعبة Crash ✈️</span>
+        </div>
+        <div class="placeholder-screen">
+            <h3>قريباً... ✈️</h3>
+        </div>
+    </div>
+
+    <!-- 4. لعبة Royal Feast (قيد الإعداد) -->
+    <div id="game-royal" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="returnToLobby()">⬅ القائمة</button>
+            <span>لعبة Royal Feast 🍗</span>
+        </div>
+        <div class="placeholder-screen">
+            <h3>قريباً... 🍗</h3>
+        </div>
+    </div>
+
 </div>
 
 <script>
     const P1 = "807055";
-    const P2 = ["1726589495", "1724497207", "1307926957", "1706821579", "120240", "1501217291", "20040077", "1690313259", "1690313233", "1690368207", "1690372939", "1698887019", "1698897963", "1699764383", "1726020325"];
+    const P2 = ["1726589495", "1724497207", "1307926957", "1706821579", "120240", "1501217291", "20040077", "1690313259", "1690313233", "1690368207", "1690372939", "1698887019", "1698897963", "1699764383", "1726020325", "20040088"];
     let curRow = 0;
+    let lastBombs = [];
 
-    function checkPass() { if (document.getElementById('pass-input').value.trim() === P1) { document.getElementById('pass-screen').style.display = 'none'; document.getElementById('id-screen').style.display = 'flex'; } else { alert("كلمة المرور غير صحيحة!"); } }
+    function checkPass() { 
+        if (document.getElementById('pass-input').value.trim() === P1) { 
+            document.getElementById('pass-screen').style.display = 'none'; 
+            document.getElementById('id-screen').style.display = 'flex'; 
+        } else { 
+            alert("كلمة المرور غير صحيحة!"); 
+        } 
+    }
     
     function checkID() { 
         if (P2.includes(document.getElementById('id-input').value.trim())) { 
             document.getElementById('id-screen').style.display = 'none'; 
-            document.getElementById('main-game').style.display = 'flex'; 
-            resetAtts(); 
+            document.getElementById('lobby-screen').style.display = 'flex'; 
         } else { 
             alert("هذا الـ ID غير مسجل!"); 
         } 
     }
 
-    function resetAtts() {
-        localStorage.setItem('app_v6', 3);
-        document.getElementById('att-count').innerText = 3;
+    function openGame(gameName) {
+        document.getElementById('lobby-screen').style.display = 'none';
+        document.getElementById('main-container').style.display = 'flex';
+        
+        document.querySelectorAll('.game-section').forEach(sec => sec.style.display = 'none');
+        
+        if(gameName === 'apple') {
+            document.getElementById('game-apple').style.display = 'flex';
+            resetAtts();
+        } else if(gameName === 'gems') {
+            document.getElementById('game-gems').style.display = 'flex';
+            renderGemsGrid();
+        } else if(gameName === 'crash') {
+            document.getElementById('game-crash').style.display = 'flex';
+        } else if(gameName === 'royal') {
+            document.getElementById('game-royal').style.display = 'flex';
+        }
     }
 
-    function startGame() {
+    function returnToLobby() {
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('lobby-screen').style.display = 'flex';
+    }
+
+    // دوال لعبة التفاحة (Apple)
+    function resetAtts() {
+        if(!localStorage.getItem('app_v6')) {
+            localStorage.setItem('app_v6', 3);
+        }
+        document.getElementById('att-count').innerText = localStorage.getItem('app_v6');
+    }
+
+    function startGameApple() {
         let atts = parseInt(localStorage.getItem('app_v6')) || 3;
         if (atts <= 0) { alert("انتهت المحاولات! جاري التجديد..."); resetAtts(); return; }
         
         localStorage.setItem('app_v6', atts - 1);
         document.getElementById('att-count').innerText = atts - 1;
         
-        const board = document.getElementById('game-board');
+        const board = document.getElementById('game-board-apple');
         board.innerHTML = '';
         curRow = 0;
         
@@ -101,11 +229,56 @@
             board.appendChild(rDiv);
         }
     }
+    
     function resetRow() { 
         document.querySelectorAll('#r' + curRow + ' .brick').forEach(b => { 
             b.style.background = '#2a2f3a'; 
             b.innerText = ''; 
         }); 
+    }
+
+    // دوال لعبة الكريستالة (Gems & Mines)
+    function generateSmartBombs() {
+        let bombs = [];
+        if (lastBombs.length > 0 && Math.random() < 0.5) {
+            bombs.push(lastBombs[Math.floor(Math.random() * lastBombs.length)]);
+        }
+        while(bombs.length < 2) {
+            let r = Math.floor(Math.random() * 25);
+            if(!bombs.includes(r)) bombs.push(r);
+        }
+        lastBombs = bombs;
+        return bombs;
+    }
+
+    function renderGemsGrid() {
+        const grid = document.getElementById('gameGridGems');
+        grid.innerHTML = "";
+        document.getElementById('gems-count').innerText = "0";
+        document.getElementById('bombs-count').innerText = "0";
+        
+        const currentBombs = generateSmartBombs();
+
+        for(let i=0; i<25; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'cell-gem';
+            cell.onclick = () => {
+                if(cell.innerHTML !== "") return;
+                if(currentBombs.includes(i)) {
+                    cell.innerHTML = "💣"; 
+                    cell.style.background = "rgba(255,0,0,0.3)";
+                    cell.style.borderColor = "#f00";
+                    document.getElementById('bombs-count').innerText = 
+                        parseInt(document.getElementById('bombs-count').innerText) + 1;
+                } else {
+                    cell.innerHTML = "💎"; 
+                    cell.style.background = "rgba(0,212,255,0.2)";
+                    let g = document.getElementById('gems-count');
+                    g.innerText = parseInt(g.innerText) + 1;
+                }
+            };
+            grid.appendChild(cell);
+        }
     }
 </script>
 </body>
