@@ -87,7 +87,6 @@
     <div class="login-box">
         <h2>CORE ACCESS 🔐</h2>
         
-        <!-- لافتة التجربة المجانية المضافة حديثاً -->
         <div class="trial-badge">
             <span>⚡</span> تجربة مجانية لفترة محدودة
         </div>
@@ -196,8 +195,12 @@
     const P2 = ["1726589495", "1724497207", "1307926957", "1706821579", "120240", "1501217291", "20040077", "1690313259", "1690313233", "1690368207", "1690372939", "1698887019", "1698897963", "1699764383", "1726020325", "20040088", "1658356877"];
     let curRow = 0;
     let lastBombs = [];
+    
+    // متغيرات للتحقق إذا كانت الجولة الحالية استهلكت محاولة أم لا
+    let appleAttemptUsed = false;
+    let gemsAttemptUsed = false;
+    let royalAttemptUsed = false;
 
-    // إدارة المحاولات العامة للمنصة بالكامل
     function getGlobalAttempts() {
         let att = localStorage.getItem('global_attempts');
         if (att === null) {
@@ -273,6 +276,12 @@
             return;
         }
 
+        // منع دخول أي لعبة إذا انتهت المحاولات تماماً
+        if (getGlobalAttempts() <= 0) {
+            alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!");
+            return;
+        }
+
         document.getElementById('lobby-screen').style.display = 'none';
         document.getElementById('main-container').style.display = 'flex';
         
@@ -281,12 +290,16 @@
         
         if(gameName === 'apple') {
             document.getElementById('game-apple').style.display = 'flex';
+            appleAttemptUsed = false;
+            startGameAppleSetup();
         } else if(gameName === 'gems') {
             document.getElementById('game-gems').style.display = 'flex';
-            renderGemsGrid();
+            gemsAttemptUsed = false;
+            renderGemsGridSetup();
         } else if(gameName === 'royal') {
             document.getElementById('game-royal').style.display = 'flex';
-            initRoyalGame();
+            royalAttemptUsed = false;
+            initRoyalGameSetup();
         }
     }
 
@@ -296,7 +309,6 @@
         updateAttemptsDisplay();
     }
 
-    // دالة عامة لخصم محاولة
     function consumeAttempt() {
         let att = getGlobalAttempts();
         if (att <= 0) return false;
@@ -305,13 +317,8 @@
         return true;
     }
 
-    // دوال لعبة التفاحة (Apple)
-    function startGameApple() {
-        let atts = getGlobalAttempts();
-        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
-        
-        if (!consumeAttempt()) return;
-        
+    // --- لعبة التفاحة ---
+    function startGameAppleSetup() {
         const board = document.getElementById('game-board-apple');
         board.innerHTML = '';
         curRow = 0;
@@ -326,6 +333,14 @@
                 b.className = 'brick';
                 b.onclick = () => { 
                     if (i !== curRow) return;
+                    
+                    // خصم المحاولة عند أول تفاعل حقيقي للمستخدم
+                    if (!appleAttemptUsed) {
+                        if (getGlobalAttempts() <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة!"); return; }
+                        if (!consumeAttempt()) return;
+                        appleAttemptUsed = true;
+                    }
+
                     if (bombs.includes(j)) {
                         b.style.background = '#e74c3c'; 
                         b.innerText = '💣'; 
@@ -342,6 +357,15 @@
             board.appendChild(rDiv);
         }
     }
+
+    function startGameApple() {
+        if (getGlobalAttempts() <= 0 && !appleAttemptUsed) {
+            alert("انتهت محاولاتك الثلاثة المتاحة!");
+            return;
+        }
+        appleAttemptUsed = false;
+        startGameAppleSetup();
+    }
     
     function resetRow() { 
         document.querySelectorAll('#r' + curRow + ' .brick').forEach(b => { 
@@ -350,7 +374,7 @@
         }); 
     }
 
-    // دوال لعبة Gems & Mines
+    // --- لعبة Gems & Mines ---
     function generateSmartBombs() {
         let bombs = [];
         if (lastBombs.length > 0 && Math.random() < 0.5) {
@@ -364,12 +388,7 @@
         return bombs;
     }
 
-    function renderGemsGrid() {
-        let atts = getGlobalAttempts();
-        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
-        
-        if (!consumeAttempt()) return;
-
+    function renderGemsGridSetup() {
         const grid = document.getElementById('gameGridGems');
         grid.innerHTML = "";
         document.getElementById('gems-count').innerText = "0";
@@ -382,6 +401,14 @@
             cell.className = 'cell-gem';
             cell.onclick = () => {
                 if(cell.innerHTML !== "") return;
+
+                // خصم المحاولة عند أول ضغطة جواهر
+                if (!gemsAttemptUsed) {
+                    if (getGlobalAttempts() <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة!"); return; }
+                    if (!consumeAttempt()) return;
+                    gemsAttemptUsed = true;
+                }
+
                 if(currentBombs.includes(i)) {
                     cell.innerHTML = "💣"; 
                     cell.style.background = "rgba(255,0,0,0.3)";
@@ -399,17 +426,21 @@
         }
     }
 
-    // دوال لعبة Royal Feast (عشوائية ومقيدة بالمحاولات العامة)
+    function renderGemsGrid() {
+        if (getGlobalAttempts() <= 0 && !gemsAttemptUsed) {
+            alert("انتهت محاولاتك الثلاثة المتاحة!");
+            return;
+        }
+        gemsAttemptUsed = false;
+        renderGemsGridSetup();
+    }
+
+    // --- لعبة Royal Feast ---
     const foodItems = ["🍗", "🥩", "🍰", "🍰", "🫓", "🍕", "🍰", "🍗", "🍕", "🫓", "🍰", "🍕", "🫓", "🥩", "🥩"];
     const royalMults = [1.21, 1.53, 1.96, 2.53, 3.33, 4.45, 6, 8.3, 11.8, 17.16, 25.74, 40, 65, 110, 200];
     let royalStep = 0;
 
-    function initRoyalGame() {
-        let atts = getGlobalAttempts();
-        if (atts <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة لهذا الـ ID!"); return; }
-        
-        if (!consumeAttempt()) return;
-
+    function initRoyalGameSetup() {
         royalStep = 0;
         document.getElementById('multiplier').innerText = "المضاعف: 1.00";
         const board = document.getElementById('game-board-royal');
@@ -424,6 +455,14 @@
             div.className = 'cell-royal';
             div.onclick = () => {
                 if(div.classList.contains('revealed')) return;
+
+                // خصم المحاولة عند أول ضغطة في لعبة الفراخ
+                if (!royalAttemptUsed) {
+                    if (getGlobalAttempts() <= 0) { alert("انتهت محاولاتك الثلاثة المتاحة!"); return; }
+                    if (!consumeAttempt()) return;
+                    royalAttemptUsed = true;
+                }
+
                 div.classList.add('revealed');
                 div.innerHTML = item;
                 if(item !== "☠️") {
@@ -434,6 +473,15 @@
             };
             board.appendChild(div);
         });
+    }
+
+    function initRoyalGame() {
+        if (getGlobalAttempts() <= 0 && !royalAttemptUsed) {
+            alert("انتهت محاولاتك الثلاثة المتاحة!");
+            return;
+        }
+        royalAttemptUsed = false;
+        initRoyalGameSetup();
     }
 </script>
 </body>
